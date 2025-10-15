@@ -215,8 +215,7 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-xl">
+    <div className="bg-white min-h-screen pb-20">
         <div className="pt-8 px-6">
           <button onClick={onBack} className="mb-6 flex items-center text-gray-600">
             <ChevronLeft className="w-5 h-5" />
@@ -300,7 +299,6 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
               💡 <strong>Tip:</strong> 카카오 REST API 키를 설정하면 {location}의 실제 장소가 추천됩니다!
             </p>
           </div>
-        </div>
       </div>
     </div>
   );

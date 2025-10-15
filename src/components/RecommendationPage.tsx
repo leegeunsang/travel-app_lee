@@ -146,8 +146,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-gradient-to-b from-blue-50 to-white min-h-screen pb-20 px-6 shadow-xl">
+    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen pb-20 px-6">
       <div className="pt-8">
         <button onClick={onBack} className="mb-6 text-gray-600">
           ← 돌아가기
@@ -270,7 +269,6 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
             </Button>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );

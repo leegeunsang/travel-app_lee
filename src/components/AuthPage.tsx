@@ -105,8 +105,7 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-gradient-to-b from-blue-50 to-white min-h-screen pb-20 px-6 shadow-xl">
+    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen pb-20 px-6">
       <div className="pt-8">
         <button onClick={onBack} className="mb-6 text-gray-600">
           ← 돌아가기
@@ -241,7 +240,6 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
             기능을 사용할 수 있습니다.
           </p>
         </div>
-      </div>
       </div>
     </div>
   );

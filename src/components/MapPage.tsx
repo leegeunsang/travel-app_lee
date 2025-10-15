@@ -78,8 +78,7 @@ export function MapPage({ location, accessToken, onBack }: MapPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-xl">
+    <div className="bg-white min-h-screen pb-20">
       <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
         <div className="flex items-center justify-between">
           <button onClick={onBack} className="text-gray-600">
@@ -134,7 +133,6 @@ export function MapPage({ location, accessToken, onBack }: MapPageProps) {
             마커 클릭 시 상세 정보와 경로 안내를 제공합니다.
           </p>
         </div>
-      </div>
       </div>
     </div>
   );

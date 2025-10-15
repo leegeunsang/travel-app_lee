@@ -47,9 +47,8 @@ export function SearchPage({ onSearch, onBack }: SearchPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 px-6 shadow-xl">
-        <div className="pt-8">
+    <div className="bg-white min-h-screen pb-20 px-6">
+      <div className="pt-8">
         <button onClick={onBack} className="mb-6 text-gray-600">
           ← 돌아가기
         </button>
@@ -130,7 +129,6 @@ export function SearchPage({ onSearch, onBack }: SearchPageProps) {
           <p className="text-sm text-blue-800">
             💡 지역을 선택하면 여행 성향 분석 설문이 시작됩니다.
           </p>
-        </div>
         </div>
       </div>
     </div>

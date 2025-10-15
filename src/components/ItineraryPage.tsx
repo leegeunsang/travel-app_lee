@@ -130,9 +130,8 @@ export function ItineraryPage({ userId, accessToken, onBack }: ItineraryPageProp
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 px-6 shadow-xl">
-        <div className="pt-8">
+    <div className="bg-white min-h-screen pb-20 px-6">
+      <div className="pt-8">
         <button onClick={onBack} className="mb-6 text-gray-600">
           ← 돌아가기
         </button>
@@ -258,7 +257,6 @@ export function ItineraryPage({ userId, accessToken, onBack }: ItineraryPageProp
             ))}
           </div>
         )}
-        </div>
       </div>
     </div>
   );
