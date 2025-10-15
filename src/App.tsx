@@ -191,116 +191,138 @@ export default function App() {
   // Render current page
   if (currentPage === "auth") {
     return (
-      <AuthPage
-        onAuthSuccess={handleAuthSuccess}
-        onBack={() => setCurrentPage("home")}
-      />
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <AuthPage
+            onAuthSuccess={handleAuthSuccess}
+            onBack={() => setCurrentPage("home")}
+          />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "profile") {
     return (
-      <>
-        <ProfilePage
-          userId={userId}
-          userEmail={userEmail}
-          onBack={() => setCurrentPage("home")}
-          onNavigateToItineraries={() => setCurrentPage("itineraries")}
-          onNavigateToBookmarks={() => setCurrentPage("bookmarks")}
-          onLogout={handleLogout}
-        />
-        <BottomNav currentPage="menu" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <ProfilePage
+            userId={userId}
+            userEmail={userEmail}
+            onBack={() => setCurrentPage("home")}
+            onNavigateToItineraries={() => setCurrentPage("itineraries")}
+            onNavigateToBookmarks={() => setCurrentPage("bookmarks")}
+            onLogout={handleLogout}
+          />
+          <BottomNav currentPage="menu" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "itineraries") {
     return (
-      <>
-        <ItineraryPage
-          userId={userId}
-          accessToken={accessToken}
-          onBack={() => setCurrentPage("profile")}
-        />
-        <BottomNav currentPage="menu" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <ItineraryPage
+            userId={userId}
+            accessToken={accessToken}
+            onBack={() => setCurrentPage("profile")}
+          />
+          <BottomNav currentPage="menu" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "bookmarks") {
     return (
-      <>
-        <BookmarkPage
-          userId={userId}
-          accessToken={accessToken}
-          onBack={() => setCurrentPage("profile")}
-        />
-        <BottomNav currentPage="menu" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <BookmarkPage
+            userId={userId}
+            accessToken={accessToken}
+            onBack={() => setCurrentPage("profile")}
+          />
+          <BottomNav currentPage="menu" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "search") {
     return (
-      <>
-        <SearchPage 
-          onSearch={handleSearch}
-          onBack={() => setCurrentPage("home")}
-        />
-        <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <SearchPage 
+            onSearch={handleSearch}
+            onBack={() => setCurrentPage("home")}
+          />
+          <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "survey") {
     return (
-      <SurveyPage
-        onComplete={handleSurveyComplete}
-        onBack={() => setCurrentPage("search")}
-      />
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <SurveyPage
+            onComplete={handleSurveyComplete}
+            onBack={() => setCurrentPage("search")}
+          />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "recommendation") {
     return (
-      <>
-        <RecommendationPage
-          travelStyle={travelStyle}
-          location={selectedLocation}
-          accessToken={accessToken}
-          onBack={() => setCurrentPage("survey")}
-          onShowMap={() => setCurrentPage("map")}
-          onShowRoutes={() => setCurrentPage("routes")}
-          onSaveItinerary={isAuthenticated ? () => setCurrentPage("itineraries") : undefined}
-        />
-        <BottomNav currentPage="search" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <RecommendationPage
+            travelStyle={travelStyle}
+            location={selectedLocation}
+            accessToken={accessToken}
+            onBack={() => setCurrentPage("survey")}
+            onShowMap={() => setCurrentPage("map")}
+            onShowRoutes={() => setCurrentPage("routes")}
+            onSaveItinerary={isAuthenticated ? () => setCurrentPage("itineraries") : undefined}
+          />
+          <BottomNav currentPage="search" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "routes") {
     return (
-      <>
-        <RoutesPage
-          travelStyle={travelStyle}
-          location={selectedLocation}
-          onBack={() => setCurrentPage("recommendation")}
-        />
-        <BottomNav currentPage="search" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <RoutesPage
+            travelStyle={travelStyle}
+            location={selectedLocation}
+            onBack={() => setCurrentPage("recommendation")}
+          />
+          <BottomNav currentPage="search" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
   if (currentPage === "map") {
     return (
-      <>
-        <MapPage
-          location={selectedLocation}
-          accessToken={accessToken}
-          onBack={() => setCurrentPage("recommendation")}
-        />
-        <BottomNav currentPage="search" onNavigate={handleNavigate} />
-      </>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <MapPage
+            location={selectedLocation}
+            accessToken={accessToken}
+            onBack={() => setCurrentPage("recommendation")}
+          />
+          <BottomNav currentPage="search" onNavigate={handleNavigate} />
+        </div>
+      </div>
     );
   }
 
