@@ -306,15 +306,17 @@ export default function App() {
 
   if (currentPage === "community") {
     return (
-      <div className="min-h-screen bg-white pb-20 px-6">
-        <div className="pt-8">
-          <h1 className="text-2xl mb-6">커뮤니티</h1>
-          <div className="text-center py-20 text-gray-400">
-            <p>커뮤니티 기능은 곧 제공될 예정입니다.</p>
-            <p className="text-sm mt-2">다른 여행자들의 후기와 일정을 공유하세요!</p>
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 px-6 shadow-xl">
+          <div className="pt-8">
+            <h1 className="text-2xl mb-6">커뮤니티</h1>
+            <div className="text-center py-20 text-gray-400">
+              <p>커뮤니티 기능은 곧 제공될 예정입니다.</p>
+              <p className="text-sm mt-2">다른 여행자들의 후기와 일정을 공유하세요!</p>
+            </div>
           </div>
+          <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
-        <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
       </div>
     );
   }
