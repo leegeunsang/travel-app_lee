@@ -1,0 +1,15 @@
+이 파일은 강제 업데이트를 위한 파일입니다.
+GitHub Desktop에서 변경사항이 보이도록 하기 위해 생성되었습니다.
+
+수정된 내용:
+1. App.tsx - 커뮤니티 페이지에 max-w-[412px] wrapper 추가
+2. styles/globals.css - body 배경을 bg-gray-100으로 변경
+3. .gitignore - 빌드 파일 제외 설정
+
+이 파일을 확인하셨다면:
+1. GitHub Desktop 열기
+2. 이 파일(FORCE-UPDATE.txt)이 보임
+3. Commit & Push
+4. Vercel 자동 배포 대기
+
+완료 후 이 파일은 삭제하셔도 됩니다.
