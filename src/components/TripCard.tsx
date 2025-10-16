@@ -1,4 +1,5 @@
 import { Heart, MapPin } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface TripCardProps {
   image: string;
@@ -11,10 +12,11 @@ export function TripCard({ image, likes, comments }: TripCardProps) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="relative w-full rounded-lg overflow-hidden shadow-sm" style={{ aspectRatio: '1 / 1' }}>
-        <img
+        <ImageWithFallback
           src={image}
           alt="여행지"
           className="absolute inset-0 w-full h-full object-cover"
+          crossOrigin="anonymous"
         />
       </div>
       <div className="flex flex-col gap-1 px-0.5">

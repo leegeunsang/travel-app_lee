@@ -379,10 +379,11 @@ export default function App() {
 
         {/* Hero Section */}
         <div className="relative w-full" style={{ height: '240px' }}>
-          <img
-            src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNDMyNTQxfDA&ixlib=rb-4.1.0&q=80&w=1080"
+          <ImageWithFallback
+            src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNTkwMTMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
             alt="서울 스카이라인"
             className="absolute inset-0 w-full h-full object-cover"
+            crossOrigin="anonymous"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-blue-900/20 to-black/60"></div>
           
@@ -438,10 +439,11 @@ export default function App() {
             className="relative w-full cursor-pointer rounded-2xl overflow-hidden shadow-lg"
             style={{ height: '176px' }}
           >
-            <img
-              src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+            <ImageWithFallback
+              src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDU5MDEzNHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
               alt="AI 추천"
               className="absolute inset-0 w-full h-full object-cover"
+              crossOrigin="anonymous"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-blue-900/85 via-blue-600/30 to-transparent"></div>
             <div className="absolute top-3 right-3 z-10">
@@ -487,10 +489,11 @@ export default function App() {
                 className="relative w-full cursor-pointer group rounded-2xl overflow-hidden shadow-md"
                 style={{ height: '128px' }}
               >
-                <img
+                <ImageWithFallback
                   src={dest.image}
                   alt={dest.title}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  crossOrigin="anonymous"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
                 <div className="absolute bottom-3 left-3 right-3 z-10">
