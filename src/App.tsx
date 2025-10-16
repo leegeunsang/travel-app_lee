@@ -86,6 +86,8 @@ export default function App() {
       }
     } catch (error) {
       console.error("Session check error:", error);
+      // Continue without authentication - app works without login
+      console.log("Continuing without authentication");
     }
   };
 
@@ -178,6 +180,7 @@ export default function App() {
   };
 
   const handleNavigate = (page: string) => {
+    console.log("Navigating to:", page);
     // If navigating to menu and authenticated, go to profile instead
     if (page === "menu" && isAuthenticated) {
       setCurrentPage("profile");
@@ -187,6 +190,10 @@ export default function App() {
       setCurrentPage(page as Page);
     }
   };
+
+  // Debug: Log current page
+  console.log("Current page:", currentPage);
+  console.log("Is authenticated:", isAuthenticated);
 
   // Render current page
   if (currentPage === "auth") {
