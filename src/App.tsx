@@ -378,28 +378,28 @@ export default function App() {
       </div>
 
       {/* Hero Section */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-56 overflow-hidden">
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNDMyNTQxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
           alt="서울 스카이라인"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/30 via-transparent to-black/50 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-blue-900/20 to-black/60"></div>
         
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="absolute top-4 left-6 right-6"
+          className="absolute top-3 left-4 right-4"
         >
-          <Badge className="mb-2 bg-white/20 text-white border-white/40 backdrop-blur-sm text-xs">
-            <Sparkles className="w-3 h-3 mr-1" />
-            AI 기반 추천 시스템
+          <Badge className="mb-2 bg-white/20 text-white border-white/40 backdrop-blur-sm">
+            <Sparkles className="w-3.5 h-3.5 mr-1" />
+            <span className="text-xs">AI 기반 추천 시스템</span>
           </Badge>
-          <h1 className="text-white text-2xl mb-2 drop-shadow-lg">
+          <h1 className="text-white text-3xl font-bold mb-1.5 drop-shadow-lg leading-tight">
             Escape the<br />Ordinary!!!
           </h1>
-          <p className="text-white/90 text-sm drop-shadow">
+          <p className="text-white/95 drop-shadow">
             Plan Less, Travel More.
           </p>
         </motion.div>
@@ -409,54 +409,54 @@ export default function App() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="absolute bottom-6 left-6 right-6"
+          className="absolute bottom-4 left-4 right-4"
         >
           <button 
             onClick={() => setCurrentPage("search")}
-            className="w-full bg-white rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl hover:shadow-xl transition-shadow"
+            className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-98"
           >
-            <Search className="w-4 h-4 text-blue-500" />
-            <span className="flex-1 text-left text-gray-400 text-sm">어느 곳이든지 검색해 보세요.</span>
-            <Compass className="w-4 h-4 text-gray-300" />
+            <Search className="w-5 h-5 text-blue-500 flex-shrink-0" />
+            <span className="flex-1 text-left text-gray-400">어느 곳이든지 검색해 보세요.</span>
+            <Compass className="w-5 h-5 text-gray-300 flex-shrink-0" />
           </button>
         </motion.div>
       </div>
 
       {/* AI Algorithm Section */}
-      <div className="px-6 mt-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-4 mt-6">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="mb-1">AI 맞춤 추천</h2>
+            <h2 className="text-lg font-semibold mb-0.5">AI 맞춤 추천</h2>
             <p className="text-sm text-gray-500">당신만을 위한 여행 코스</p>
           </div>
-          <Sparkles className="w-6 h-6 text-blue-500" />
+          <Sparkles className="w-6 h-6 text-blue-500 flex-shrink-0" />
         </div>
         <motion.div 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setCurrentPage("survey")}
-          className="relative h-40 rounded-2xl overflow-hidden shadow-lg cursor-pointer"
+          className="relative h-44 rounded-2xl overflow-hidden shadow-lg cursor-pointer"
         >
           <ImageWithFallback
             src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
             alt="AI 추천"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-600/30 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/85 via-blue-600/30 to-transparent"></div>
           <div className="absolute top-3 right-3 z-10">
-            <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm text-xs">
-              GPT 기반
+            <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm">
+              <span className="text-xs">GPT 기반</span>
             </Badge>
           </div>
           <div className="absolute bottom-4 left-4 right-4 text-white z-10">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="text-xs">AI 성향 분석</span>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">AI 성향 분석</span>
             </div>
-            <div className="text-base mb-3">
+            <p className="text-base font-semibold mb-3">
               최적의 여행 코스를 제공합니다
-            </div>
-            <Button className="w-full bg-white text-blue-600 hover:bg-white/90 h-9 text-sm">
+            </p>
+            <Button className="w-full bg-white text-blue-600 hover:bg-white/90 h-10 font-medium">
               성향 분석 시작하기
             </Button>
           </div>
@@ -464,15 +464,15 @@ export default function App() {
       </div>
 
       {/* Popular Destinations */}
-      <div className="px-6 mt-8">
-        <div className="flex items-center justify-between mb-5">
+      <div className="px-4 mt-6">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <h2 className="mb-1">인기 여행지</h2>
+            <h2 className="text-lg font-semibold mb-0.5">인기 여행지</h2>
             <p className="text-sm text-gray-500">많은 사람들이 찾는 장소</p>
           </div>
-          <TrendingUp className="w-5 h-5 text-blue-500" />
+          <TrendingUp className="w-6 h-6 text-blue-500 flex-shrink-0" />
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {popularDestinations.map((dest, index) => (
             <motion.div
               key={index}
@@ -483,26 +483,26 @@ export default function App() {
                 setSelectedLocation(dest.title);
                 setCurrentPage("survey");
               }}
-              className="relative h-36 rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
+              className="relative h-32 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
             >
               <ImageWithFallback
                 src={dest.image}
                 alt={dest.title}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
               <div className="absolute bottom-3 left-3 right-3 z-10">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-white" />
-                  <span className="text-white text-sm">{dest.title}</span>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <MapPin className="w-4 h-4 text-white flex-shrink-0" />
+                  <span className="text-white font-semibold">{dest.title}</span>
                 </div>
-                <p className="text-white/80 text-xs mb-2">{dest.subtitle}</p>
+                <p className="text-white/90 text-sm mb-2">{dest.subtitle}</p>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                    <span className="text-white text-xs">{dest.rating}</span>
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <span className="text-white font-medium">{dest.rating}</span>
                   </div>
-                  <span className="text-white/60 text-xs">
+                  <span className="text-white/80 text-sm">
                     {dest.reviews.toLocaleString()}개 리뷰
                   </span>
                 </div>
@@ -513,9 +513,9 @@ export default function App() {
       </div>
 
       {/* Travel Categories */}
-      <div className="px-6 mt-8">
-        <h2 className="mb-4">여행 테마</h2>
-        <div className="grid grid-cols-3 gap-3">
+      <div className="px-4 mt-6">
+        <h2 className="text-lg font-semibold mb-3">여행 테마</h2>
+        <div className="grid grid-cols-3 gap-2.5">
           {travelCategories.map((category, index) => (
             <motion.button
               key={index}
@@ -523,19 +523,19 @@ export default function App() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
               onClick={() => setCurrentPage("search")}
-              className={`${category.color} p-4 rounded-xl hover:shadow-md transition-shadow`}
+              className={`${category.color} p-3.5 rounded-xl hover:shadow-md transition-all active:scale-95`}
             >
-              <div className="text-2xl mb-2">{category.icon}</div>
-              <div className="text-sm text-gray-700">{category.title}</div>
+              <div className="text-2xl mb-1.5">{category.icon}</div>
+              <div className="text-xs font-medium text-gray-700">{category.title}</div>
             </motion.button>
           ))}
         </div>
       </div>
 
       {/* Recommended Trip Section */}
-      <div className="px-6 mt-8">
-        <h2 className="mb-3 text-base">Recommended Trip</h2>
-        <div className="grid grid-cols-3 gap-2.5">
+      <div className="px-4 mt-6">
+        <h2 className="text-lg font-semibold mb-3">Recommended Trip</h2>
+        <div className="grid grid-cols-3 gap-2">
           {recommendedTrips.map((trip, index) => (
             <TripCard key={index} {...trip} />
           ))}
@@ -543,29 +543,29 @@ export default function App() {
       </div>
 
       {/* User Reviews Section */}
-      <div className="px-6 mt-8 mb-6">
-        <h2 className="mb-3 text-base">여행자 후기</h2>
-        <div className="space-y-2.5">
+      <div className="px-4 mt-6 mb-6">
+        <h2 className="text-lg font-semibold mb-3">여행자 후기</h2>
+        <div className="space-y-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="p-3.5 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100"
+            className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 shadow-sm"
           >
-            <div className="flex items-center gap-2.5 mb-2.5">
-              <div className="w-9 h-9 bg-blue-200 rounded-full flex items-center justify-center text-lg">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
                 👤
               </div>
               <div className="flex-1">
-                <div className="text-xs">김민지</div>
-                <div className="flex items-center gap-0.5">
+                <div className="text-sm font-medium text-gray-800">김민지</div>
+                <div className="flex items-center gap-0.5 mt-0.5">
                   {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-2.5 h-2.5 text-yellow-400 fill-yellow-400" />
+                    <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                   ))}
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-700">
+            <p className="text-sm text-gray-700 leading-relaxed">
               AI 추천으로 제주도 여행 계획을 세웠는데, 정말 만족스러웠어요! 
               숨은 맛집까지 추천해주셔서 감사합니다 ✨
             </p>
@@ -575,22 +575,22 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="p-3.5 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100"
+            className="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 shadow-sm"
           >
-            <div className="flex items-center gap-2.5 mb-2.5">
-              <div className="w-9 h-9 bg-green-200 rounded-full flex items-center justify-center text-lg">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
                 👤
               </div>
               <div className="flex-1">
-                <div className="text-xs">박준호</div>
-                <div className="flex items-center gap-0.5">
+                <div className="text-sm font-medium text-gray-800">박준호</div>
+                <div className="flex items-center gap-0.5 mt-0.5">
                   {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-2.5 h-2.5 text-yellow-400 fill-yellow-400" />
+                    <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
                   ))}
                 </div>
               </div>
             </div>
-            <p className="text-xs text-gray-700">
+            <p className="text-sm text-gray-700 leading-relaxed">
               날씨 정보까지 실시간으로 확인할 수 있어서 
               여행 계획 세우기가 훨씬 편했습니다! 👍
             </p>
