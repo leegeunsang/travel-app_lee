@@ -375,9 +375,9 @@ export default function App() {
         <ImageWithFallback
           src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNDMyNTQxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
           alt="서울 스카이라인"
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/30 via-transparent to-black/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/30 via-transparent to-black/50 pointer-events-none"></div>
         
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -424,38 +424,36 @@ export default function App() {
           </div>
           <Sparkles className="w-6 h-6 text-blue-500" />
         </div>
-        <motion.button 
+        <motion.div 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setCurrentPage("search")}
-          className="w-full"
+          className="relative h-56 rounded-2xl overflow-hidden shadow-lg cursor-pointer"
         >
-          <div className="relative h-56 rounded-2xl overflow-hidden shadow-lg">
-            <ImageWithFallback
-              src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-              alt="AI 추천"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-600/30 to-transparent"></div>
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm">
-                GPT 기반
-              </Badge>
-            </div>
-            <div className="absolute bottom-5 left-5 right-5 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm">AI 성향 분석</span>
-              </div>
-              <div className="text-lg mb-4">
-                최적의 여행 코스를<br />제공합니다
-              </div>
-              <Button className="w-full bg-white text-blue-600 hover:bg-white/90">
-                성향 분석 시작하기
-              </Button>
-            </div>
+          <ImageWithFallback
+            src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+            alt="AI 추천"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-600/30 to-transparent pointer-events-none"></div>
+          <div className="absolute top-4 right-4 z-10">
+            <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm">
+              GPT 기반
+            </Badge>
           </div>
-        </motion.button>
+          <div className="absolute bottom-5 left-5 right-5 text-white z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm">AI 성향 분석</span>
+            </div>
+            <div className="text-lg mb-4">
+              최적의 여행 코스를<br />제공합니다
+            </div>
+            <Button className="w-full bg-white text-blue-600 hover:bg-white/90">
+              성향 분석 시작하기
+            </Button>
+          </div>
+        </motion.div>
       </div>
 
       {/* Popular Destinations */}
@@ -469,7 +467,7 @@ export default function App() {
         </div>
         <div className="space-y-4">
           {popularDestinations.map((dest, index) => (
-            <motion.button
+            <motion.div
               key={index}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -478,33 +476,31 @@ export default function App() {
                 setSelectedLocation(dest.title);
                 setCurrentPage("survey");
               }}
-              className="w-full"
+              className="relative h-44 rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
             >
-              <div className="relative h-44 rounded-2xl overflow-hidden group">
-                <ImageWithFallback
-                  src={dest.image}
-                  alt={dest.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="w-4 h-4 text-white" />
-                    <span className="text-white">{dest.title}</span>
+              <ImageWithFallback
+                src={dest.image}
+                alt={dest.title}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-4 left-4 right-4 z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-4 h-4 text-white" />
+                  <span className="text-white">{dest.title}</span>
+                </div>
+                <p className="text-white/80 text-sm mb-3">{dest.subtitle}</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1">
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <span className="text-white text-sm">{dest.rating}</span>
                   </div>
-                  <p className="text-white/80 text-sm mb-3">{dest.subtitle}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-white text-sm">{dest.rating}</span>
-                    </div>
-                    <span className="text-white/60 text-sm">
-                      {dest.reviews.toLocaleString()}개 리뷰
-                    </span>
-                  </div>
+                  <span className="text-white/60 text-sm">
+                    {dest.reviews.toLocaleString()}개 리뷰
+                  </span>
                 </div>
               </div>
-            </motion.button>
+            </motion.div>
           ))}
         </div>
       </div>
