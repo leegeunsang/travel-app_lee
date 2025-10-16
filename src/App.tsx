@@ -116,19 +116,19 @@ export default function App() {
 
   const recommendedTrips = [
     {
-      image: "https://images.unsplash.com/photo-1712651069440-3d75e39a2775?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjBtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwxfHx8fDE3NjA0MzI1NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1712651069440-3d75e39a2775?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjBtb3VudGFpbiUyMGxhbmRzY2FwZXxlbnwxfHx8fDE3NjA0MzI1NDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       likes: 667,
       views: 0,
       comments: 134
     },
     {
-      image: "https://images.unsplash.com/photo-1599033769063-fcd3ef816810?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjBwYWxhY2UlMjB0ZW1wbGV8ZW58MXx8fHwxNzYwNDMyNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1599033769063-fcd3ef816810?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjBwYWxhY2UlMjB0ZW1wbGV8ZW58MXx8fHwxNzYwNDMyNTQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       likes: 381,
       views: 0,
       comments: 210
     },
     {
-      image: "https://images.unsplash.com/photo-1648085689183-4eeaacdaa710?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMG5pZ2h0JTIwY2l0eXxlbnwxfHx8fDE3NjA0MzI1NDN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1648085689183-4eeaacdaa710?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMG5pZ2h0JTIwY2l0eXxlbnwxfHx8fDE3NjA0MzI1NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
       likes: 407,
       views: 0,
       comments: 1
@@ -139,21 +139,21 @@ export default function App() {
     {
       title: "제주도",
       subtitle: "바다와 힐링의 섬",
-      image: "https://images.unsplash.com/photo-1696335105620-c00aec47521f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxKZWp1JTIwaXNsYW5kJTIwYmVhY2h8ZW58MXx8fHwxNzYwNDg4MzUyfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1696335105620-c00aec47521f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxKZWp1JTIwaXNsYW5kJTIwYmVhY2h8ZW58MXx8fHwxNzYwNDg4MzUyfDA&ixlib=rb-4.1.0&q=80&w=1080",
       rating: 4.8,
       reviews: 2847
     },
     {
       title: "부산",
       subtitle: "해운대 & 광안리",
-      image: "https://images.unsplash.com/photo-1717179225021-3c3642d2a8e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxCdXNhbiUyMG9jZWFuJTIwY2l0eXxlbnwxfHx8fDE3NjA0ODgzNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1717179225021-3c3642d2a8e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxCdXNhbiUyMG9jZWFuJTIwY2l0eXxlbnwxfHx8fDE3NjA0ODgzNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       rating: 4.7,
       reviews: 1923
     },
     {
       title: "전주",
       subtitle: "한옥마을 & 먹거리",
-      image: "https://images.unsplash.com/photo-1650476524542-c5cc53306700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjB0cmFkaXRpb25hbCUyMGhhbm9rfGVufDF8fHx8MTc2MDQ4ODM1M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+      image: "https://images.unsplash.com/photo-1650476524542-c5cc53306700?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxLb3JlYW4lMjB0cmFkaXRpb25hbCUyMGhhbm9rfGVufDF8fHx8MTc2MDQ4ODM1M3ww&ixlib=rb-4.1.0&q=80&w=1080",
       rating: 4.6,
       reviews: 1456
     }
@@ -338,7 +338,7 @@ export default function App() {
       <div className="min-h-screen bg-gray-100 flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 px-6 shadow-xl">
           <div className="pt-8">
-            <h1 className="text-2xl mb-6">커뮤니티</h1>
+            <h1 className="text-2xl font-bold mb-6">커뮤니티</h1>
             <div className="text-center py-20 text-gray-400">
               <p>커뮤니티 기능은 곧 제공될 예정입니다.</p>
               <p className="text-sm mt-2">다른 여행자들의 후기와 일정을 공유하세요!</p>
@@ -354,260 +354,260 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center">
       <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-xl">
-      {/* Status Bar */}
-      <div className="bg-white px-4 py-2 flex items-center justify-between">
-        <span className="text-sm">9:41</span>
-        <div className="flex items-center gap-2">
-          {isAuthenticated ? (
-            <button
-              onClick={() => setCurrentPage("profile")}
-              className="flex items-center gap-1 text-sm text-blue-600"
-            >
-              <UserIcon className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={() => setCurrentPage("auth")}
-              className="text-xs text-blue-600"
-            >
-              로그인
-            </button>
-          )}
-          <div className="w-4 h-3 border border-black rounded-sm"></div>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative h-56 overflow-hidden">
-        <ImageWithFallback
-          src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNDMyNTQxfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-          alt="서울 스카이라인"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-blue-900/20 to-black/60"></div>
-        
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute top-3 left-4 right-4"
-        >
-          <Badge className="mb-2 bg-white/20 text-white border-white/40 backdrop-blur-sm">
-            <Sparkles className="w-3.5 h-3.5 mr-1" />
-            <span className="text-xs">AI 기반 추천 시스템</span>
-          </Badge>
-          <h1 className="text-white text-3xl font-bold mb-1.5 drop-shadow-lg leading-tight">
-            Escape the<br />Ordinary!!!
-          </h1>
-          <p className="text-white/95 drop-shadow">
-            Plan Less, Travel More.
-          </p>
-        </motion.div>
-
-        {/* Search Bar */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="absolute bottom-4 left-4 right-4"
-        >
-          <button 
-            onClick={() => setCurrentPage("search")}
-            className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-98"
-          >
-            <Search className="w-5 h-5 text-blue-500 flex-shrink-0" />
-            <span className="flex-1 text-left text-gray-400">어느 곳이든지 검색해 보세요.</span>
-            <Compass className="w-5 h-5 text-gray-300 flex-shrink-0" />
-          </button>
-        </motion.div>
-      </div>
-
-      {/* AI Algorithm Section */}
-      <div className="px-4 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="text-lg font-semibold mb-0.5">AI 맞춤 추천</h2>
-            <p className="text-sm text-gray-500">당신만을 위한 여행 코스</p>
+        {/* Status Bar */}
+        <div className="bg-white px-4 py-2 flex items-center justify-between">
+          <span className="text-sm font-medium">9:41</span>
+          <div className="flex items-center gap-2">
+            {isAuthenticated ? (
+              <button
+                onClick={() => setCurrentPage("profile")}
+                className="flex items-center gap-1 text-sm text-blue-600 font-medium"
+              >
+                <UserIcon className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setCurrentPage("auth")}
+                className="text-xs text-blue-600 font-medium"
+              >
+                로그인
+              </button>
+            )}
+            <div className="w-4 h-3 border border-black rounded-sm"></div>
           </div>
-          <Sparkles className="w-6 h-6 text-blue-500 flex-shrink-0" />
         </div>
-        <motion.div 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setCurrentPage("survey")}
-          className="relative h-44 rounded-2xl overflow-hidden shadow-lg cursor-pointer"
-        >
-          <ImageWithFallback
-            src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
-            alt="AI 추천"
-            className="w-full h-full object-cover"
+
+        {/* Hero Section */}
+        <div className="relative w-full" style={{ height: '240px' }}>
+          <img
+            src="https://images.unsplash.com/photo-1651836169465-74022b940638?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMHNreWxpbmUlMjBzdW5zZXR8ZW58MXx8fHwxNzYwNDMyNTQxfDA&ixlib=rb-4.1.0&q=80&w=1080"
+            alt="서울 스카이라인"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/85 via-blue-600/30 to-transparent"></div>
-          <div className="absolute top-3 right-3 z-10">
-            <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm">
-              <span className="text-xs">GPT 기반</span>
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-blue-900/20 to-black/60"></div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute top-4 left-4 right-4 z-10"
+          >
+            <Badge className="mb-2 bg-white/20 text-white border-white/40 backdrop-blur-sm">
+              <Sparkles className="w-3.5 h-3.5 mr-1" />
+              <span className="text-xs font-medium">AI 기반 추천 시스템</span>
             </Badge>
-          </div>
-          <div className="absolute bottom-4 left-4 right-4 text-white z-10">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">AI 성향 분석</span>
-            </div>
-            <p className="text-base font-semibold mb-3">
-              최적의 여행 코스를 제공합니다
+            <h1 className="text-white text-3xl font-bold mb-1.5 drop-shadow-lg leading-tight">
+              Escape the<br />Ordinary!!!
+            </h1>
+            <p className="text-white/95 text-base drop-shadow">
+              Plan Less, Travel More.
             </p>
-            <Button className="w-full bg-white text-blue-600 hover:bg-white/90 h-10 font-medium">
-              성향 분석 시작하기
-            </Button>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
 
-      {/* Popular Destinations */}
-      <div className="px-4 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="text-lg font-semibold mb-0.5">인기 여행지</h2>
-            <p className="text-sm text-gray-500">많은 사람들이 찾는 장소</p>
-          </div>
-          <TrendingUp className="w-6 h-6 text-blue-500 flex-shrink-0" />
-        </div>
-        <div className="space-y-3">
-          {popularDestinations.map((dest, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              onClick={() => {
-                setSelectedLocation(dest.title);
-                setCurrentPage("survey");
-              }}
-              className="relative h-32 rounded-2xl overflow-hidden cursor-pointer group shadow-md"
-            >
-              <ImageWithFallback
-                src={dest.image}
-                alt={dest.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
-              <div className="absolute bottom-3 left-3 right-3 z-10">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <MapPin className="w-4 h-4 text-white flex-shrink-0" />
-                  <span className="text-white font-semibold">{dest.title}</span>
-                </div>
-                <p className="text-white/90 text-sm mb-2">{dest.subtitle}</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    <span className="text-white font-medium">{dest.rating}</span>
-                  </div>
-                  <span className="text-white/80 text-sm">
-                    {dest.reviews.toLocaleString()}개 리뷰
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Travel Categories */}
-      <div className="px-4 mt-6">
-        <h2 className="text-lg font-semibold mb-3">여행 테마</h2>
-        <div className="grid grid-cols-3 gap-2.5">
-          {travelCategories.map((category, index) => (
-            <motion.button
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+          {/* Search Bar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="absolute bottom-4 left-4 right-4 z-10"
+          >
+            <button 
               onClick={() => setCurrentPage("search")}
-              className={`${category.color} p-3.5 rounded-xl hover:shadow-md transition-all active:scale-95`}
+              className="w-full bg-white rounded-2xl px-4 py-3.5 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all active:scale-98"
             >
-              <div className="text-2xl mb-1.5">{category.icon}</div>
-              <div className="text-xs font-medium text-gray-700">{category.title}</div>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Recommended Trip Section */}
-      <div className="px-4 mt-6">
-        <h2 className="text-lg font-semibold mb-3">Recommended Trip</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {recommendedTrips.map((trip, index) => (
-            <TripCard key={index} {...trip} />
-          ))}
-        </div>
-      </div>
-
-      {/* User Reviews Section */}
-      <div className="px-4 mt-6 mb-6">
-        <h2 className="text-lg font-semibold mb-3">여행자 후기</h2>
-        <div className="space-y-3">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 shadow-sm"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
-                👤
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">김민지</div>
-                <div className="flex items-center gap-0.5 mt-0.5">
-                  {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              AI 추천으로 제주도 여행 계획을 세웠는데, 정말 만족스러웠어요! 
-              숨은 맛집까지 추천해주셔서 감사합니다 ✨
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 shadow-sm"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
-                👤
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">박준호</div>
-                <div className="flex items-center gap-0.5 mt-0.5">
-                  {[1,2,3,4,5].map(i => (
-                    <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              날씨 정보까지 실시간으로 확인할 수 있어서 
-              여행 계획 세우기가 훨씬 편했습니다! 👍
-            </p>
+              <Search className="w-5 h-5 text-blue-500 flex-shrink-0" />
+              <span className="flex-1 text-left text-gray-400 text-base">어느 곳이든지 검색해 보세요.</span>
+              <Compass className="w-5 h-5 text-gray-300 flex-shrink-0" />
+            </button>
           </motion.div>
         </div>
-      </div>
 
+        {/* AI Algorithm Section */}
+        <div className="px-4 mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-bold mb-0.5">AI 맞춤 추천</h2>
+              <p className="text-sm text-gray-500">당신만을 위한 여행 코스</p>
+            </div>
+            <Sparkles className="w-6 h-6 text-blue-500 flex-shrink-0" />
+          </div>
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setCurrentPage("survey")}
+            className="relative w-full cursor-pointer rounded-2xl overflow-hidden shadow-lg"
+            style={{ height: '176px' }}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1694702817149-daf817247693?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBjaXR5JTIwYnJpZGdlfGVufDF8fHx8MTc2MDQzMjU0M3ww&ixlib=rb-4.1.0&q=80&w=1080"
+              alt="AI 추천"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/85 via-blue-600/30 to-transparent"></div>
+            <div className="absolute top-3 right-3 z-10">
+              <Badge className="bg-white/20 text-white border-white/40 backdrop-blur-sm">
+                <span className="text-xs font-medium">GPT 기반</span>
+              </Badge>
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 text-white z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-semibold">AI 성향 분석</span>
+              </div>
+              <p className="text-base font-bold mb-3">
+                최적의 여행 코스를 제공합니다
+              </p>
+              <Button className="w-full bg-white text-blue-600 hover:bg-white/90 h-10 font-semibold">
+                성향 분석 시작하기
+              </Button>
+            </div>
+          </motion.div>
+        </div>
 
+        {/* Popular Destinations */}
+        <div className="px-4 mt-6">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-lg font-bold mb-0.5">인기 여행지</h2>
+              <p className="text-sm text-gray-500">많은 사람들이 찾는 장소</p>
+            </div>
+            <TrendingUp className="w-6 h-6 text-blue-500 flex-shrink-0" />
+          </div>
+          <div className="space-y-3">
+            {popularDestinations.map((dest, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                onClick={() => {
+                  setSelectedLocation(dest.title);
+                  setCurrentPage("survey");
+                }}
+                className="relative w-full cursor-pointer group rounded-2xl overflow-hidden shadow-md"
+                style={{ height: '128px' }}
+              >
+                <img
+                  src={dest.image}
+                  alt={dest.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent"></div>
+                <div className="absolute bottom-3 left-3 right-3 z-10">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <MapPin className="w-4 h-4 text-white flex-shrink-0" />
+                    <span className="text-white font-bold text-base">{dest.title}</span>
+                  </div>
+                  <p className="text-white/90 text-sm mb-2">{dest.subtitle}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-white font-semibold text-sm">{dest.rating}</span>
+                    </div>
+                    <span className="text-white/80 text-sm">
+                      {dest.reviews.toLocaleString()}개 리뷰
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
 
-      {/* Bottom Navigation */}
-      <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
-      
-      {/* Toast Notifications */}
-      <Toaster />
-      
-      {/* PWA Install Prompt */}
-      <PWAInstallPrompt />
+        {/* Travel Categories */}
+        <div className="px-4 mt-6">
+          <h2 className="text-lg font-bold mb-3">여행 테마</h2>
+          <div className="grid grid-cols-3 gap-2.5">
+            {travelCategories.map((category, index) => (
+              <motion.button
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                onClick={() => setCurrentPage("search")}
+                className={`${category.color} p-3.5 rounded-xl hover:shadow-md transition-all active:scale-95`}
+              >
+                <div className="text-2xl mb-1.5">{category.icon}</div>
+                <div className="text-xs font-semibold text-gray-700">{category.title}</div>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommended Trip Section */}
+        <div className="px-4 mt-6">
+          <h2 className="text-lg font-bold mb-3">Recommended Trip</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {recommendedTrips.map((trip, index) => (
+              <TripCard key={index} {...trip} />
+            ))}
+          </div>
+        </div>
+
+        {/* User Reviews Section */}
+        <div className="px-4 mt-6 mb-6">
+          <h2 className="text-lg font-bold mb-3">여행자 후기</h2>
+          <div className="space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-xl border border-blue-100 shadow-sm"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                  👤
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-bold text-gray-800">김민지</div>
+                  <div className="flex items-center gap-0.5 mt-0.5">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                AI 추천으로 제주도 여행 계획을 세웠는데, 정말 만족스러웠어요! 
+                숨은 맛집까지 추천해주셔서 감사합니다 ✨
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="p-4 bg-gradient-to-br from-green-50 to-white rounded-xl border border-green-100 shadow-sm"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                  👤
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-bold text-gray-800">박준호</div>
+                  <div className="flex items-center gap-0.5 mt-0.5">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                날씨 정보까지 실시간으로 확인할 수 있어서 
+                여행 계획 세우기가 훨씬 편했습니다! 👍
+              </p>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Bottom Navigation */}
+        <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
+        
+        {/* Toast Notifications */}
+        <Toaster />
+        
+        {/* PWA Install Prompt */}
+        <PWAInstallPrompt />
       </div>
     </div>
   );

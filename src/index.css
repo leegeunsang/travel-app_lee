@@ -401,23 +401,6 @@
     background-color: oklch(1 0 0);
     color: oklch(.145 0 0);
   }
-
-  * {
-    border-color: oklch(.922 0 0);
-  }
-
-  body {
-    background-color: oklch(1 0 0);
-    color: oklch(.145 0 0);
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  #root {
-    width: 100%;
-    min-height: 100vh;
-  }
 }
 
 @layer utilities {
@@ -667,10 +650,6 @@
     field-sizing: content;
   }
 
-  .aspect-square {
-    aspect-ratio: 1;
-  }
-
   .size-4 {
     width: calc(var(--spacing) * 4);
     height: calc(var(--spacing) * 4);
@@ -733,16 +712,8 @@
     height: calc(var(--spacing) * 16);
   }
 
-  .h-32 {
-    height: calc(var(--spacing) * 32);
-  }
-
-  .h-44 {
-    height: calc(var(--spacing) * 44);
-  }
-
-  .h-56 {
-    height: calc(var(--spacing) * 56);
+  .h-20 {
+    height: calc(var(--spacing) * 20);
   }
 
   .h-\[500px\] {
@@ -803,6 +774,10 @@
 
   .w-16 {
     width: calc(var(--spacing) * 16);
+  }
+
+  .w-20 {
+    width: calc(var(--spacing) * 20);
   }
 
   .w-fit {
@@ -1438,10 +1413,6 @@
     text-align: left;
   }
 
-  .align-middle {
-    vertical-align: middle;
-  }
-
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -1652,6 +1623,10 @@
 
   .underline-offset-4 {
     text-underline-offset: 4px;
+  }
+
+  .opacity-30 {
+    opacity: .3;
   }
 
   .opacity-70 {
@@ -2283,6 +2258,36 @@
   --border: 217.2 32.6% 17.5%;
   --input: 217.2 32.6% 17.5%;
   --ring: 212.7 26.8% 83.9%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f3f4f6;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 @property --tw-translate-x {
