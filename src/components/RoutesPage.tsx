@@ -241,15 +241,17 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
                   <div className="space-y-4 mb-4">
                     {route.spots.map((spot, spotIndex) => (
                       <div key={spotIndex} className="flex gap-3">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                        <div className="flex-shrink-0 w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm shadow-md">
                           {spot.order}
                         </div>
                         <div className="flex-shrink-0">
-                          <ImageWithFallback
-                            src={spot.image}
-                            alt={spot.name}
-                            className="w-16 h-16 rounded-lg object-cover"
-                          />
+                          <div className="w-20 h-20">
+                            <ImageWithFallback
+                              src={spot.image}
+                              alt={spot.name}
+                              className="w-full h-full rounded-lg object-cover"
+                            />
+                          </div>
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="text-sm mb-1">{spot.name}</h3>

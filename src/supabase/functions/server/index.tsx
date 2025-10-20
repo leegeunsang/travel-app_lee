@@ -31,8 +31,60 @@ app.get("/make-server-80cc3277/weather/:city", async (c) => {
     const city = c.req.param("city");
     const apiKey = Deno.env.get("OPENWEATHER_API_KEY");
     
+    console.log(`[Weather API] Received request for city: ${city}`);
+    console.log(`[Weather API] API Key exists: ${apiKey ? 'Yes' : 'No'}`);
+    
+    // Map Korean city names to English
+    const cityNameMap: Record<string, string> = {
+      "서울": "Seoul",
+      "부산": "Busan",
+      "대구": "Daegu",
+      "인천": "Incheon",
+      "광주": "Gwangju",
+      "대전": "Daejeon",
+      "울산": "Ulsan",
+      "세종": "Sejong",
+      "경기": "Gyeonggi",
+      "강원": "Gangwon",
+      "충북": "Chungbuk",
+      "충남": "Chungnam",
+      "전북": "Jeonbuk",
+      "전남": "Jeonnam",
+      "경북": "Gyeongbuk",
+      "경남": "Gyeongnam",
+      "제주": "Jeju",
+      "강릉": "Gangneung",
+      "전주": "Jeonju",
+      "경주": "Gyeongju",
+      "여수": "Yeosu",
+      "포항": "Pohang",
+      "창원": "Changwon",
+      "천안": "Cheonan",
+      "청주": "Cheongju",
+      "안산": "Ansan",
+      "안양": "Anyang",
+      "수원": "Suwon",
+      "용인": "Yongin",
+      "성남": "Seongnam",
+      "고양": "Goyang",
+      "화성": "Hwaseong",
+      "남양주": "Namyangju",
+      "부천": "Bucheon",
+      "평택": "Pyeongtaek",
+      "시흥": "Siheung",
+      "파주": "Paju",
+      "김해": "Gimhae",
+      "진주": "Jinju",
+      "통영": "Tongyeong",
+      "속초": "Sokcho",
+      "춘천": "Chuncheon",
+      "원주": "Wonju"
+    };
+    
+    const englishCity = cityNameMap[city] || city;
+    
     if (!apiKey) {
-      console.log("Error getting weather: OPENWEATHER_API_KEY is not set");
+      console.log("[Weather API] OPENWEATHER_API_KEY is not set, returning mock data");
       // Return mock data when API key is not set
       return c.json({
         temperature: 20,
@@ -44,14 +96,16 @@ app.get("/make-server-80cc3277/weather/:city", async (c) => {
       });
     }
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)},KR&appid=${apiKey}&units=metric&lang=kr`;
-    console.log(`Fetching weather for: ${city}`);
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(englishCity)},KR&appid=${apiKey}&units=metric&lang=kr`;
+    console.log(`[Weather API] Fetching weather for: ${city} (${englishCity})`);
     
     const response = await fetch(url);
     
+    console.log(`[Weather API] OpenWeather API response status: ${response.status}`);
+    
     if (!response.ok) {
       const errorText = await response.text();
-      console.log(`Error fetching weather for ${city}: ${response.status} ${response.statusText} - ${errorText}`);
+      console.log(`[Weather API] Error fetching weather for ${city}: ${response.status} ${response.statusText} - ${errorText}`);
       
       // Return mock data on API error
       return c.json({
@@ -66,8 +120,10 @@ app.get("/make-server-80cc3277/weather/:city", async (c) => {
     
     const data = await response.json();
     
+    console.log(`[Weather API] Raw data received:`, JSON.stringify(data).substring(0, 200));
+    
     if (!data.main || !data.weather || !data.weather[0]) {
-      console.log(`Invalid weather data received for ${city}`);
+      console.log(`[Weather API] Invalid weather data received for ${city}`);
       // Return mock data
       return c.json({
         temperature: 20,
@@ -79,16 +135,20 @@ app.get("/make-server-80cc3277/weather/:city", async (c) => {
       });
     }
     
-    return c.json({
+    const weatherResponse = {
       temperature: Math.round(data.main.temp),
       description: data.weather[0].description,
       icon: data.weather[0].icon,
       humidity: data.main.humidity,
       windSpeed: data.wind.speed,
       isMock: false
-    });
+    };
+    
+    console.log(`[Weather API] Sending response:`, weatherResponse);
+    
+    return c.json(weatherResponse);
   } catch (error) {
-    console.log(`Error in weather endpoint: ${error}`);
+    console.log(`[Weather API] Error in weather endpoint: ${error}`);
     // Return mock data on error
     return c.json({
       temperature: 20,
@@ -397,6 +457,8 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
   try {
     const areaCode = c.req.param("areaCode");
     const apiKey = Deno.env.get("TOUR_API_KEY");
+    const page = c.req.query("page") || "1";
+    const numOfRows = c.req.query("numOfRows") || "20";
     
     // Mock attractions data
     const mockAttractions = [
@@ -404,31 +466,51 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
         title: "경복궁",
         addr1: "서울특별시 종로구 사직로 161",
         contentid: "mock1",
-        tel: "02-3700-3900"
+        tel: "02-3700-3900",
+        firstimage: "https://images.unsplash.com/photo-1548013146-72479768bada",
+        mapx: "126.9770",
+        mapy: "37.5796",
+        contenttypeid: "12"
       },
       {
         title: "남산서울타워",
         addr1: "서울특별시 용산구 남산공원길 105",
         contentid: "mock2",
-        tel: "02-3455-9277"
+        tel: "02-3455-9277",
+        firstimage: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
+        mapx: "126.9882",
+        mapy: "37.5512",
+        contenttypeid: "12"
       },
       {
         title: "북촌한옥마을",
         addr1: "서울특별시 종로구 계동길 37",
         contentid: "mock3",
-        tel: "02-2148-4161"
+        tel: "02-2148-4161",
+        firstimage: "https://images.unsplash.com/photo-1583417319070-4a69db38a482",
+        mapx: "126.9850",
+        mapy: "37.5825",
+        contenttypeid: "12"
       },
       {
         title: "명동거리",
         addr1: "서울특별시 중구 명동길",
         contentid: "mock4",
-        tel: "02-3789-7001"
+        tel: "02-3789-7001",
+        firstimage: "https://images.unsplash.com/photo-1541698444083-023c97d3f4b6",
+        mapx: "126.9850",
+        mapy: "37.5636",
+        contenttypeid: "12"
       },
       {
         title: "청계천",
         addr1: "서울특별시 종로구 청계천로",
         contentid: "mock5",
-        tel: "02-2290-6114"
+        tel: "02-2290-6114",
+        firstimage: "https://images.unsplash.com/photo-1519331379826-f10be5486c6f",
+        mapx: "126.9783",
+        mapy: "37.5698",
+        contenttypeid: "12"
       }
     ];
     
@@ -436,12 +518,13 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
       console.log("Error getting attractions: TOUR_API_KEY is not set, using mock data");
       return c.json({ 
         attractions: mockAttractions,
+        totalCount: mockAttractions.length,
         isMock: true 
       });
     }
 
-    const url = `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${apiKey}&numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=TravelApp&_type=json&listYN=Y&arrange=A&contentTypeId=12&areaCode=${areaCode}`;
-    console.log(`Fetching attractions for area code: ${areaCode}`);
+    const url = `https://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=${apiKey}&numOfRows=${numOfRows}&pageNo=${page}&MobileOS=ETC&MobileApp=TravelApp&_type=json&listYN=Y&arrange=A&contentTypeId=12&areaCode=${areaCode}`;
+    console.log(`Fetching attractions for area code: ${areaCode}, page: ${page}`);
     
     const response = await fetch(url);
     
@@ -452,6 +535,7 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
       // Return mock data on API error
       return c.json({ 
         attractions: mockAttractions,
+        totalCount: mockAttractions.length,
         isMock: true 
       });
     }
@@ -463,23 +547,27 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
       console.log(`API returned error: ${data.response?.header?.resultMsg}`);
       return c.json({ 
         attractions: mockAttractions,
+        totalCount: mockAttractions.length,
         isMock: true 
       });
     }
     
     const items = data.response?.body?.items?.item || [];
+    const totalCount = data.response?.body?.totalCount || 0;
     
     // If no items, return mock data
     if (items.length === 0) {
       console.log(`No attractions found for area ${areaCode}, using mock data`);
       return c.json({ 
         attractions: mockAttractions,
+        totalCount: mockAttractions.length,
         isMock: true 
       });
     }
     
     return c.json({ 
       attractions: Array.isArray(items) ? items : [items],
+      totalCount,
       isMock: false 
     });
   } catch (error) {
@@ -491,25 +579,330 @@ app.get("/make-server-80cc3277/attractions/:areaCode", async (c) => {
           title: "경복궁",
           addr1: "서울특별시 종로구 사직로 161",
           contentid: "mock1",
-          tel: "02-3700-3900"
+          tel: "02-3700-3900",
+          firstimage: "https://images.unsplash.com/photo-1548013146-72479768bada",
+          mapx: "126.9770",
+          mapy: "37.5796",
+          contenttypeid: "12"
         },
         {
           title: "남산서울타워",
           addr1: "서울특별시 용산구 남산공원길 105",
           contentid: "mock2",
-          tel: "02-3455-9277"
+          tel: "02-3455-9277",
+          firstimage: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
+          mapx: "126.9882",
+          mapy: "37.5512",
+          contenttypeid: "12"
         },
         {
           title: "북촌한옥마을",
           addr1: "서울특별시 종로구 계동길 37",
           contentid: "mock3",
-          tel: "02-2148-4161"
+          tel: "02-2148-4161",
+          firstimage: "https://images.unsplash.com/photo-1583417319070-4a69db38a482",
+          mapx: "126.9850",
+          mapy: "37.5825",
+          contenttypeid: "12"
         }
       ],
+      totalCount: 3,
       isMock: true 
     });
   }
 });
+
+// Search tourist attractions by keyword
+app.get("/make-server-80cc3277/attractions/search/:keyword", async (c) => {
+  try {
+    const keyword = c.req.param("keyword");
+    const apiKey = Deno.env.get("TOUR_API_KEY");
+    const page = c.req.query("page") || "1";
+    const numOfRows = c.req.query("numOfRows") || "20";
+    
+    const mockResults = [
+      {
+        title: `${keyword} 명소`,
+        addr1: "서울특별시 중구",
+        contentid: "search1",
+        tel: "02-1234-5678",
+        firstimage: "https://images.unsplash.com/photo-1548013146-72479768bada",
+        mapx: "126.9783",
+        mapy: "37.5665"
+      }
+    ];
+    
+    if (!apiKey) {
+      console.log("TOUR_API_KEY is not set, using mock data");
+      return c.json({ 
+        attractions: mockResults,
+        totalCount: mockResults.length,
+        isMock: true 
+      });
+    }
+
+    const url = `https://apis.data.go.kr/B551011/KorService1/searchKeyword1?serviceKey=${apiKey}&numOfRows=${numOfRows}&pageNo=${page}&MobileOS=ETC&MobileApp=TravelApp&_type=json&listYN=Y&arrange=A&keyword=${encodeURIComponent(keyword)}&contentTypeId=12`;
+    console.log(`Searching attractions with keyword: ${keyword}`);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.log(`Error searching attractions: ${response.statusText}`);
+      return c.json({ 
+        attractions: mockResults,
+        totalCount: mockResults.length,
+        isMock: true 
+      });
+    }
+    
+    const data = await response.json();
+    
+    if (data.response?.header?.resultCode !== "0000") {
+      console.log(`API returned error: ${data.response?.header?.resultMsg}`);
+      return c.json({ 
+        attractions: mockResults,
+        totalCount: mockResults.length,
+        isMock: true 
+      });
+    }
+    
+    const items = data.response?.body?.items?.item || [];
+    const totalCount = data.response?.body?.totalCount || 0;
+    
+    if (items.length === 0) {
+      return c.json({ 
+        attractions: [],
+        totalCount: 0,
+        isMock: false 
+      });
+    }
+    
+    return c.json({ 
+      attractions: Array.isArray(items) ? items : [items],
+      totalCount,
+      isMock: false 
+    });
+  } catch (error) {
+    console.log(`Error in search attractions endpoint: ${error}`);
+    return c.json({ 
+      attractions: [],
+      totalCount: 0,
+      isMock: true 
+    });
+  }
+});
+
+// Get detailed attraction information
+app.get("/make-server-80cc3277/attraction/detail/:contentId", async (c) => {
+  try {
+    const contentId = c.req.param("contentId");
+    const apiKey = Deno.env.get("TOUR_API_KEY");
+    
+    const mockDetail = {
+      title: "관광명소",
+      addr1: "서울특별시 중구",
+      tel: "02-1234-5678",
+      overview: "이곳은 대한민국의 아름다운 관광명소입니다. 역사와 문화가 살아있는 곳으로 많은 관광객들이 찾아옵니다.",
+      homepage: "",
+      firstimage: "https://images.unsplash.com/photo-1548013146-72479768bada",
+      mapx: "126.9783",
+      mapy: "37.5665",
+      contentid: contentId,
+      contenttypeid: "12"
+    };
+    
+    if (!apiKey) {
+      console.log("TOUR_API_KEY is not set, using mock data");
+      return c.json({ 
+        detail: mockDetail,
+        isMock: true 
+      });
+    }
+
+    // Fetch common info
+    const commonUrl = `https://apis.data.go.kr/B551011/KorService1/detailCommon1?serviceKey=${apiKey}&MobileOS=ETC&MobileApp=TravelApp&_type=json&contentId=${contentId}&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`;
+    console.log(`Fetching detail for content ID: ${contentId}`);
+    
+    const response = await fetch(commonUrl);
+    
+    if (!response.ok) {
+      console.log(`Error fetching detail: ${response.statusText}`);
+      return c.json({ 
+        detail: mockDetail,
+        isMock: true 
+      });
+    }
+    
+    const data = await response.json();
+    
+    if (data.response?.header?.resultCode !== "0000") {
+      console.log(`API returned error: ${data.response?.header?.resultMsg}`);
+      return c.json({ 
+        detail: mockDetail,
+        isMock: true 
+      });
+    }
+    
+    const item = data.response?.body?.items?.item;
+    
+    if (!item) {
+      return c.json({ 
+        detail: mockDetail,
+        isMock: true 
+      });
+    }
+    
+    const detail = Array.isArray(item) ? item[0] : item;
+    
+    return c.json({ 
+      detail,
+      isMock: false 
+    });
+  } catch (error) {
+    console.log(`Error in attraction detail endpoint: ${error}`);
+    return c.json({ 
+      detail: {
+        title: "관광명소",
+        addr1: "서울특별시",
+        overview: "관광지 정보",
+        contentid: c.req.param("contentId")
+      },
+      isMock: true 
+    });
+  }
+});
+
+// Get attraction images
+app.get("/make-server-80cc3277/attraction/images/:contentId", async (c) => {
+  try {
+    const contentId = c.req.param("contentId");
+    const apiKey = Deno.env.get("TOUR_API_KEY");
+    
+    const mockImages = [
+      {
+        originimgurl: "https://images.unsplash.com/photo-1548013146-72479768bada",
+        smallimageurl: "https://images.unsplash.com/photo-1548013146-72479768bada?w=400"
+      }
+    ];
+    
+    if (!apiKey) {
+      return c.json({ 
+        images: mockImages,
+        isMock: true 
+      });
+    }
+
+    const url = `https://apis.data.go.kr/B551011/KorService1/detailImage1?serviceKey=${apiKey}&MobileOS=ETC&MobileApp=TravelApp&_type=json&contentId=${contentId}&imageYN=Y&subImageYN=Y`;
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      return c.json({ 
+        images: mockImages,
+        isMock: true 
+      });
+    }
+    
+    const data = await response.json();
+    
+    if (data.response?.header?.resultCode !== "0000") {
+      return c.json({ 
+        images: mockImages,
+        isMock: true 
+      });
+    }
+    
+    const items = data.response?.body?.items?.item || [];
+    
+    return c.json({ 
+      images: Array.isArray(items) ? items : [items],
+      isMock: items.length === 0 
+    });
+  } catch (error) {
+    console.log(`Error fetching images: ${error}`);
+    return c.json({ 
+      images: [],
+      isMock: true 
+    });
+  }
+});
+
+// Get festival/event information
+app.get("/make-server-80cc3277/festivals", async (c) => {
+  try {
+    const apiKey = Deno.env.get("TOUR_API_KEY");
+    const areaCode = c.req.query("areaCode") || "";
+    const eventStartDate = c.req.query("eventStartDate") || getTodayDate();
+    
+    const mockFestivals = [
+      {
+        title: "서울 벚꽃축제",
+        addr1: "서울특별시 영등포구",
+        eventstartdate: "20250401",
+        eventenddate: "20250410",
+        firstimage: "https://images.unsplash.com/photo-1522383225653-ed111181a951",
+        tel: "02-1234-5678"
+      },
+      {
+        title: "부산 불꽃축제",
+        addr1: "부산광역시 수영구",
+        eventstartdate: "20250501",
+        eventenddate: "20250505",
+        firstimage: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+        tel: "051-1234-5678"
+      }
+    ];
+    
+    if (!apiKey) {
+      return c.json({ 
+        festivals: mockFestivals,
+        isMock: true 
+      });
+    }
+
+    const url = `https://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=${apiKey}&numOfRows=20&pageNo=1&MobileOS=ETC&MobileApp=TravelApp&_type=json&listYN=Y&arrange=A&eventStartDate=${eventStartDate}${areaCode ? `&areaCode=${areaCode}` : ''}`;
+    console.log(`Fetching festivals from: ${eventStartDate}`);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      return c.json({ 
+        festivals: mockFestivals,
+        isMock: true 
+      });
+    }
+    
+    const data = await response.json();
+    
+    if (data.response?.header?.resultCode !== "0000") {
+      return c.json({ 
+        festivals: mockFestivals,
+        isMock: true 
+      });
+    }
+    
+    const items = data.response?.body?.items?.item || [];
+    
+    return c.json({ 
+      festivals: Array.isArray(items) ? items : items ? [items] : mockFestivals,
+      isMock: items.length === 0 
+    });
+  } catch (error) {
+    console.log(`Error fetching festivals: ${error}`);
+    return c.json({ 
+      festivals: [],
+      isMock: true 
+    });
+  }
+});
+
+function getTodayDate(): string {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+}
 
 // Save user travel preference
 app.post("/make-server-80cc3277/save-preference", async (c) => {
@@ -682,5 +1075,344 @@ app.delete("/make-server-80cc3277/itinerary/:id", async (c) => {
     return c.json({ error: "Failed to delete itinerary" }, 500);
   }
 });
+
+// Smart place selection with review/rating filtering
+app.post("/make-server-80cc3277/select-places", async (c) => {
+  try {
+    const body = await c.req.json();
+    const { location, travelStyle, weather, categories, excludeIds = [], offset = 0 } = body;
+    
+    if (!location || !travelStyle) {
+      return c.json({ error: "Location and travelStyle are required" }, 400);
+    }
+    
+    console.log(`Selecting places for ${location}, style: ${travelStyle}, offset: ${offset}`);
+    console.log(`Categories requested: ${JSON.stringify(categories)}`);
+    console.log(`Excluded IDs: ${JSON.stringify(excludeIds)}`);
+    
+    // Mock place database with realistic data
+    const mockPlacesDB = generateMockPlaces(location);
+    console.log(`Generated ${mockPlacesDB.length} mock places`);
+    
+    // Filter by categories if provided
+    let filteredPlaces = categories && categories.length > 0
+      ? mockPlacesDB.filter(p => categories.includes(p.category))
+      : mockPlacesDB;
+    
+    // Exclude already selected places
+    if (excludeIds.length > 0) {
+      filteredPlaces = filteredPlaces.filter(p => !excludeIds.includes(p.id));
+    }
+    
+    // Apply smart filtering based on travel style and weather
+    console.log(`Filtered places before smart filtering: ${filteredPlaces.length}`);
+    const smartFiltered = applySmartFiltering(filteredPlaces, travelStyle, weather);
+    console.log(`Smart filtered places: ${smartFiltered.length}`);
+    
+    // Group by category and select top 3 per category (with offset for refresh)
+    const selectedByCategory: Record<string, any[]> = {};
+    
+    for (const place of smartFiltered) {
+      if (!selectedByCategory[place.category]) {
+        selectedByCategory[place.category] = [];
+      }
+      selectedByCategory[place.category].push(place);
+    }
+    
+    // Select top places per category (offset allows rotation)
+    const selectedPlaces: any[] = [];
+    const categoriesNeeded = categories && categories.length > 0 ? categories : Object.keys(selectedByCategory);
+    
+    for (const category of categoriesNeeded) {
+      const places = selectedByCategory[category];
+      if (places && places.length > 0) {
+        const startIndex = offset % places.length;
+        const selected = [places[startIndex]]; // Take just 1 per category for 4 categories
+        selectedPlaces.push(...selected);
+      }
+    }
+    
+    // Ensure we have exactly 4 places
+    if (selectedPlaces.length < 4) {
+      // Fill with any available places
+      for (const place of smartFiltered) {
+        if (!selectedPlaces.find(p => p.id === place.id)) {
+          selectedPlaces.push(place);
+          if (selectedPlaces.length >= 4) break;
+        }
+      }
+    }
+    
+    // If still not enough, use mock places
+    if (selectedPlaces.length < 4) {
+      for (const place of mockPlacesDB) {
+        if (!selectedPlaces.find(p => p.id === place.id)) {
+          selectedPlaces.push(place);
+          if (selectedPlaces.length >= 4) break;
+        }
+      }
+    }
+    
+    const finalPlaces = selectedPlaces.slice(0, 4);
+    console.log(`Returning ${finalPlaces.length} places`);
+    
+    return c.json({ 
+      places: finalPlaces, // Always return exactly 4
+      hasMore: true,
+      isMock: true 
+    });
+  } catch (error) {
+    console.log(`Error in select-places endpoint: ${error}`);
+    console.log(`Error stack: ${error instanceof Error ? error.stack : 'No stack trace'}`);
+    return c.json({ error: "Failed to select places" }, 500);
+  }
+});
+
+// Calculate route with distance and time
+app.post("/make-server-80cc3277/calculate-route", async (c) => {
+  try {
+    const { places, transportMode = "TRANSIT", travelStyle } = await c.req.json();
+    
+    if (!places || places.length < 2) {
+      return c.json({ error: "At least 2 places required" }, 400);
+    }
+    
+    console.log(`Calculating route for ${places.length} places, mode: ${transportMode}`);
+    
+    // Calculate distances and times between consecutive places
+    const routes = [];
+    let totalDistance = 0;
+    let totalTime = 0;
+    
+    for (let i = 0; i < places.length - 1; i++) {
+      const from = places[i];
+      const to = places[i + 1];
+      
+      // Mock distance calculation (in meters)
+      const distance = calculateMockDistance(from, to);
+      
+      // Calculate time based on transport mode
+      const time = calculateTravelTime(distance, transportMode, travelStyle);
+      
+      totalDistance += distance;
+      totalTime += time;
+      
+      routes.push({
+        from: from.name,
+        to: to.name,
+        distance: Math.round(distance),
+        distanceText: formatDistance(distance),
+        time: Math.round(time),
+        timeText: formatTime(time),
+        transportMode
+      });
+    }
+    
+    return c.json({
+      routes,
+      totalDistance: Math.round(totalDistance),
+      totalDistanceText: formatDistance(totalDistance),
+      totalTime: Math.round(totalTime),
+      totalTimeText: formatTime(totalTime),
+      recommendedDuration: calculateRecommendedDuration(places, travelStyle),
+      isMock: true
+    });
+  } catch (error) {
+    console.log(`Error in calculate-route endpoint: ${error}`);
+    return c.json({ error: "Failed to calculate route" }, 500);
+  }
+});
+
+// Helper functions for place selection
+function generateMockPlaces(location: string) {
+  const categories = ["카페", "레스토랑", "관광명소", "박물관", "공원", "쇼핑", "숙박", "액티비티"];
+  const places = [];
+  
+  let id = 1;
+  for (const category of categories) {
+    // Generate 10 places per category
+    for (let i = 1; i <= 10; i++) {
+      const reviewCount = Math.floor(Math.random() * 5000) + 10;
+      const rating = (Math.random() * 2 + 3).toFixed(1); // 3.0 - 5.0
+      
+      places.push({
+        id: `place_${id++}`,
+        name: `${location} ${category} ${i}`,
+        category,
+        reviewCount,
+        rating: parseFloat(rating),
+        description: getPlaceDescription(category, i),
+        address: `${location} ${category}거리 ${i}`,
+        isIndoor: ["카페", "레스토랑", "박물관", "쇼핑", "숙박"].includes(category),
+        isOutdoor: ["공원", "관광명소", "액티비티"].includes(category),
+        keywords: getPlaceKeywords(category, reviewCount, parseFloat(rating)),
+        lat: 37.5 + Math.random() * 0.1,
+        lng: 127.0 + Math.random() * 0.1
+      });
+    }
+  }
+  
+  return places;
+}
+
+function getPlaceDescription(category: string, index: number): string {
+  const descriptions = {
+    "카페": ["조용하고 아늑한 분위기", "인스타그램에서 핫한", "브런치가 맛있는", "현지인 추천", "뷰가 좋은"],
+    "레스토랑": ["현지 맛집", "숨은 명소", "미슐랭 가이드 선정", "전통 방식", "퓨전 요리"],
+    "관광명소": ["역사적 가치", "포토존 완벽", "한적한 분위기", "대표 명소", "숨겨진 보석"],
+    "박물관": ["현대적 전시", "체험형 전시", "교육적 가치", "한적한 관람", "유명 소장품"],
+    "공원": ["산책하기 좋은", "조용한 휴식", "가족 나들이", "현지인 추천", "한적한 자연"],
+    "쇼핑": ["현지 특산품", "전통 시장", "현대적 쇼핑몰", "숨은 보석", "합리적 가격"],
+    "숙박": ["편안한 휴식", "뷰가 좋은", "조용한 분위기", "현지 감성", "럭셔리한"],
+    "액티비티": ["스릴 넘치는", "초보자 환영", "전문 강사", "안전한 시설", "인기 체험"]
+  };
+  
+  const list = descriptions[category] || ["추천"];
+  return list[index % list.length];
+}
+
+function getPlaceKeywords(category: string, reviewCount: number, rating: number): string[] {
+  const keywords = [];
+  
+  if (reviewCount < 100 && rating >= 4.5) {
+    keywords.push("숨은명소", "한적한", "현지인추천");
+  }
+  
+  if (reviewCount > 1000 && rating >= 4.0) {
+    keywords.push("인기장소", "핫플레이스", "필수방문");
+  }
+  
+  if (rating >= 4.5) {
+    keywords.push("고평점", "추천");
+  }
+  
+  return keywords;
+}
+
+function applySmartFiltering(places: any[], travelStyle: string, weather: any) {
+  let filtered = [...places];
+  
+  // Weather-based filtering
+  if (weather && weather.description) {
+    const isRainy = weather.description.includes("비") || weather.description.includes("rain");
+    const isCold = weather.temperature < 5;
+    
+    if (isRainy || isCold) {
+      // Prioritize indoor places
+      filtered = filtered.sort((a, b) => {
+        if (a.isIndoor && !b.isIndoor) return -1;
+        if (!a.isIndoor && b.isIndoor) return 1;
+        return 0;
+      });
+    } else {
+      // Good weather - prioritize outdoor
+      filtered = filtered.sort((a, b) => {
+        if (a.isOutdoor && !b.isOutdoor) return -1;
+        if (!a.isOutdoor && b.isOutdoor) return 1;
+        return 0;
+      });
+    }
+  }
+  
+  // Travel style based filtering
+  if (travelStyle === "힐링") {
+    // Prefer hidden gems with high ratings
+    filtered = filtered.filter(p => 
+      (p.reviewCount < 1500 && p.rating >= 4.5) || // Hidden gems
+      p.keywords.includes("한적한") ||
+      p.keywords.includes("조용한")
+    ).sort((a, b) => b.rating - a.rating);
+  } else if (travelStyle === "관광") {
+    // Prefer popular places
+    filtered = filtered.filter(p => 
+      (p.reviewCount > 500 && p.rating >= 4.0) || // Popular places
+      p.keywords.includes("인기장소")
+    ).sort((a, b) => b.reviewCount - a.reviewCount);
+  } else if (travelStyle === "액티비티") {
+    // Prefer activity places with good ratings
+    filtered = filtered.filter(p => 
+      p.category === "액티비티" || 
+      p.isOutdoor
+    ).sort((a, b) => b.rating - a.rating);
+  }
+  
+  // Ensure we have enough places
+  if (filtered.length < 10) {
+    filtered = places.filter(p => p.rating >= 4.0).sort((a, b) => b.rating - a.rating);
+  }
+  
+  return filtered;
+}
+
+function calculateMockDistance(from: any, to: any): number {
+  // Simple distance calculation based on lat/lng
+  const latDiff = Math.abs(from.lat - to.lat);
+  const lngDiff = Math.abs(from.lng - to.lng);
+  
+  // Rough conversion: 1 degree ≈ 111km
+  const distanceKm = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111;
+  
+  // Return in meters, with some randomness
+  return (distanceKm * 1000) + (Math.random() * 500);
+}
+
+function calculateTravelTime(distanceMeters: number, mode: string, travelStyle: string): number {
+  // Base speed in km/h
+  const speeds = {
+    "WALK": 4,
+    "TRANSIT": 30,
+    "DRIVE": 40,
+    "BIKE": 15
+  };
+  
+  const speed = speeds[mode] || speeds["TRANSIT"];
+  const distanceKm = distanceMeters / 1000;
+  
+  // Time in minutes
+  let time = (distanceKm / speed) * 60;
+  
+  // Add buffer time for healing style (more relaxed)
+  if (travelStyle === "힐링") {
+    time *= 1.3;
+  }
+  
+  // Add minimum time (5 minutes)
+  return Math.max(time, 5);
+}
+
+function formatDistance(meters: number): string {
+  if (meters < 1000) {
+    return `${Math.round(meters)}m`;
+  }
+  return `${(meters / 1000).toFixed(1)}km`;
+}
+
+function formatTime(minutes: number): string {
+  if (minutes < 60) {
+    return `${Math.round(minutes)}분`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+  return mins > 0 ? `${hours}시간 ${mins}분` : `${hours}시간`;
+}
+
+function calculateRecommendedDuration(places: any[], travelStyle: string): string {
+  const baseTime = {
+    "힐링": 3, // 3 hours per place
+    "관광": 2, // 2 hours per place
+    "액티비티": 2.5 // 2.5 hours per place
+  };
+  
+  const timePerPlace = baseTime[travelStyle] || 2;
+  const totalHours = places.length * timePerPlace;
+  
+  if (totalHours < 6) {
+    return "반나절 코스";
+  } else if (totalHours < 10) {
+    return "1일 코스";
+  } else {
+    return "1박 2일 코스";
+  }
+}
 
 Deno.serve(app.fetch);
