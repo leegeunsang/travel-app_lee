@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>캐시 & Service Worker 완전 삭제</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    .status {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+    .info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    .success {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+    .error {
+      background: #ffebee;
+      color: #c62828;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin: 10px 0;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .log {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    .log-item {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #667eea;
+      padding-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 캐시 & Service Worker 완전 삭제</h1>
+    <p>배포된 사이트가 업데이트되지 않는 경우, 이 페이지를 사용하여 모든 캐시를 삭제하세요.</p>
+    
+    <div id="status" class="status info">
+      준비됨
+    </div>
+    
+    <button id="clearBtn" onclick="clearEverything()">
+      🗑️ 모든 캐시 & Service Worker 삭제
+    </button>
+    
+    <button onclick="window.location.href = '/'" style="background: #4caf50;">
+      ✅ 홈으로 돌아가기
+    </button>
+    
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    function addLog(message, type = 'info') {
+      const log = document.getElementById('log');
+      const item = document.createElement('div');
+      item.className = 'log-item';
+      item.style.borderLeftColor = type === 'error' ? '#c62828' : type === 'success' ? '#388e3c' : '#667eea';
+      item.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      log.appendChild(item);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function clearEverything() {
+      const btn = document.getElementById('clearBtn');
+      const status = document.getElementById('status');
+      
+      btn.disabled = true;
+      status.className = 'status info';
+      status.textContent = '삭제 중...';
+      
+      addLog('캐시 삭제 시작...');
+      
+      try {
+        // 1. Unregister all Service Workers
+        if ('serviceWorker' in navigator) {
+          addLog('Service Worker 확인 중...');
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          
+          if (registrations.length === 0) {
+            addLog('등록된 Service Worker가 없습니다.', 'info');
+          }
+          
+          for (const registration of registrations) {
+            await registration.unregister();
+            addLog(`✓ Service Worker 삭제됨: ${registration.scope}`, 'success');
+          }
+        }
+        
+        // 2. Clear all caches
+        if ('caches' in window) {
+          addLog('캐시 확인 중...');
+          const cacheNames = await caches.keys();
+          
+          if (cacheNames.length === 0) {
+            addLog('캐시가 없습니다.', 'info');
+          }
+          
+          for (const cacheName of cacheNames) {
+            await caches.delete(cacheName);
+            addLog(`✓ 캐시 삭제됨: ${cacheName}`, 'success');
+          }
+        }
+        
+        // 3. Clear localStorage
+        addLog('localStorage 삭제 중...');
+        localStorage.clear();
+        addLog('✓ localStorage 삭제됨', 'success');
+        
+        // 4. Clear sessionStorage
+        addLog('sessionStorage 삭제 중...');
+        sessionStorage.clear();
+        addLog('✓ sessionStorage 삭제됨', 'success');
+        
+        status.className = 'status success';
+        status.textContent = '✅ 모든 캐시가 삭제되었습니다!';
+        addLog('====================================', 'success');
+        addLog('완료! 이제 페이지를 새로고침하세요.', 'success');
+        addLog('====================================', 'success');
+        
+        // Auto reload after 2 seconds
+        setTimeout(() => {
+          addLog('자동으로 페이지를 새로고침합니다...', 'info');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        }, 2000);
+        
+      } catch (error) {
+        status.className = 'status error';
+        status.textContent = '❌ 오류 발생: ' + error.message;
+        addLog('오류: ' + error.message, 'error');
+        btn.disabled = false;
+      }
+    }
+    
+    // Log initial state
+    addLog('페이지 로드 완료');
+    
+    // Check current Service Workers
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        addLog(`현재 등록된 Service Worker: ${regs.length}개`);
+        regs.forEach(reg => {
+          addLog(`  - ${reg.scope}`, 'info');
+        });
+      });
+    }
+    
+    // Check current caches
+    if ('caches' in window) {
+      caches.keys().then(names => {
+        addLog(`현재 캐시: ${names.length}개`);
+        names.forEach(name => {
+          addLog(`  - ${name}`, 'info');
+        });
+      });
+    }
+  </script>
+</body>
+</html>

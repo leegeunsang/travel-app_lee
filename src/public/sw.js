@@ -1,5 +1,5 @@
-// Service Worker for PWA
-const CACHE_NAME = 'travel-app-v3';
+// Service Worker for PWA - Network First Strategy
+const CACHE_NAME = 'travel-app-v4-network-first';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -10,39 +10,41 @@ const urlsToCache = [
 
 // Install event - cache files
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('[SW] Installing v4 - Network First...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Service Worker: Caching files');
+        console.log('[SW] Caching essential files');
         return cache.addAll(urlsToCache);
       })
       .catch((err) => {
-        console.log('Service Worker: Cache failed', err);
+        console.log('[SW] Cache failed', err);
       })
   );
+  // Force immediate activation
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker: Activating...');
+  console.log('[SW] Activating v4 - Cleaning ALL old caches...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
-            console.log('Service Worker: Clearing old cache');
+            console.log('[SW] Deleting old cache:', cache);
             return caches.delete(cache);
           }
         })
       );
     })
   );
+  // Take control of all pages immediately
   return self.clients.claim();
 });
 
-// Fetch event - Network first, fallback to cache for API calls
+// Fetch event - NETWORK FIRST for all HTML/JS/CSS
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -52,57 +54,41 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // API calls - Network first strategy
-  if (url.pathname.includes('/functions/') || 
-      url.hostname.includes('supabase.co') ||
-      url.hostname.includes('openweathermap.org')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Clone and cache the response
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseToCache);
-          });
-          return response;
-        })
-        .catch(() => {
-          // Fallback to cache if network fails
-          return caches.match(request);
-        })
-    );
-    return;
-  }
-
-  // Static assets - Cache first strategy
+  // NETWORK FIRST for everything - prioritize fresh content
   event.respondWith(
-    caches.match(request)
+    fetch(request)
       .then((response) => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(request).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type === 'error') {
-            return response;
-          }
-
-          // Clone and cache the response
+        // Clone and cache the fresh response
+        if (response && response.status === 200) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(request, responseToCache);
           });
-
-          return response;
-        }).catch(() => {
-          // Offline fallback for navigation
+        }
+        return response;
+      })
+      .catch(() => {
+        // Only use cache if network fails (offline)
+        console.log('[SW] Network failed, using cache for:', url.pathname);
+        return caches.match(request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // For navigation requests, return index.html
           if (request.mode === 'navigate') {
             return caches.match('/');
           }
         });
       })
   );
+});
+
+// Message handler to force update
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Force update requested');
+    self.skipWaiting();
+  }
 });
 
 // Push notification

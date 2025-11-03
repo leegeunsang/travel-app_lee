@@ -18,33 +18,47 @@ export const registerServiceWorker = async () => {
 
   try {
     const registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/'
+      scope: '/',
+      updateViaCache: 'none' // Always check for SW updates
     });
     
     console.log('✅ Service Worker registered successfully!');
     console.log('📱 PWA enabled! You can now install this app on your device.');
     
-    // Check for updates periodically
-    setInterval(() => {
-      registration.update();
-    }, 60000); // Check every minute
-    
-    // Handle updates
+    // Force immediate update if available
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing;
       if (newWorker) {
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('🔄 New version available! Refresh to update.');
+            console.log('🔄 New version available! Auto-updating...');
             
-            // Optionally notify user
-            if (confirm('새 버전이 있습니다. 지금 업데이트할까요?')) {
+            // Send message to skip waiting immediately
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+            
+            // Auto reload after 1 second
+            setTimeout(() => {
               window.location.reload();
-            }
+            }, 1000);
           }
         });
       }
     });
+    
+    // Check for updates on focus
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      console.log('[PWA] Controller changed, reloading...');
+      window.location.reload();
+    });
+    
+    // Check for updates immediately and periodically
+    registration.update();
+    setInterval(() => {
+      registration.update();
+    }, 30000); // Check every 30 seconds
 
     return registration;
   } catch (error) {
