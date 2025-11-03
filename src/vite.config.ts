@@ -7,16 +7,24 @@ export default defineConfig({
     // Define environment variables at build time
     'import.meta.env.VITE_KAKAO_JS_KEY': JSON.stringify('94e86b9b6ddf71039ab09c9902d2d79f'),
   },
+  css: {
+    postcss: './postcss.config.js',
+  },
   build: {
     outDir: 'build',
     sourcemap: false,
     chunkSizeWarningLimit: 1000,
+    cssCodeSplit: false,
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['lucide-react'],
-        }
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'style.css') return 'assets/style.css';
+          return 'assets/[name]-[hash][extname]';
+        },
       }
     }
   },
