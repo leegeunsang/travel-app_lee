@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    // Define environment variables at build time
+    'import.meta.env.VITE_KAKAO_JS_KEY': JSON.stringify('94e86b9b6ddf71039ab09c9902d2d79f'),
+  },
   build: {
     outDir: 'build',
     sourcemap: false,

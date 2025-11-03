@@ -86,22 +86,8 @@ export function BookmarkPage({ userId, accessToken, onBack }: BookmarkPageProps)
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center">
       <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl pb-20">
-        {/* Status Bar */}
-        <div className="sticky top-0 z-50 bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-          <span className="text-lg font-semibold text-black ml-2">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-              <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-            </div>
-          </div>
-        </div>
-
         {/* Header */}
-        <div className="sticky top-[57px] z-40 bg-white px-8 py-4 border-b border-gray-100">
+        <div className="sticky top-0 z-40 bg-white px-8 py-6 border-b border-gray-100">
           <div className="flex items-center gap-4">
             <button 
               onClick={onBack} 

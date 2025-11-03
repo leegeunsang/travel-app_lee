@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { getSupabaseClient } from "../utils/supabase/client";
 import { projectId, publicAnonKey } from "../utils/supabase/info";
+import { StatusBar } from "./StatusBar";
 
 interface AuthPageProps {
   onAuthSuccess: (accessToken: string, userId: string) => void;
@@ -103,52 +104,41 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl pb-20">
-        {/* Status Bar */}
-        <div className="sticky top-0 z-50 bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-          <span className="text-lg font-semibold text-black ml-2">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-              <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-            </div>
-          </div>
-        </div>
-
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+      <div className="w-full max-w-[412px] bg-white/80 backdrop-blur-xl min-h-screen shadow-2xl pb-20">
         {/* Header */}
-        <div className="bg-white px-8 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-4">
+        <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-8">
+          <div className="flex items-center gap-4 mb-2">
             <button 
               onClick={onBack} 
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2.5 -ml-2 hover:bg-white/20 rounded-xl transition-colors"
             >
-              <ArrowLeft className="w-6 h-6 text-gray-700" />
+              <ArrowLeft className="w-6 h-6 text-white" />
             </button>
             <div className="flex items-center gap-3">
-              <Plane className="w-7 h-7 text-blue-600" />
-              <h1 className="text-xl">여행 시작하기</h1>
+              <div className="p-2 bg-white/20 backdrop-blur-sm rounded-xl">
+                <Plane className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-2xl text-white font-semibold">여행 시작하기</h1>
             </div>
           </div>
+          <p className="text-blue-100 text-sm ml-14">계정을 만들고 여행을 저장하세요</p>
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-6 py-6">
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 p-1.5 bg-gray-100 rounded-xl h-12">
-              <TabsTrigger value="signin" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsList className="grid w-full grid-cols-2 mb-8 p-1.5 bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl h-14 shadow-lg">
+              <TabsTrigger value="signin" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-xl font-semibold">
                 로그인
               </TabsTrigger>
-              <TabsTrigger value="signup" className="rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <TabsTrigger value="signup" className="rounded-xl data-[state=active]:bg-white data-[state=active]:shadow-xl font-semibold">
                 회원가입
               </TabsTrigger>
             </TabsList>
 
             {/* Sign In Tab */}
             <TabsContent value="signin">
-              <Card className="p-8 shadow-sm border-gray-200">
+              <Card className="p-8 shadow-2xl border-0 bg-white/95 backdrop-blur-xl">
                 <form onSubmit={handleSignIn} className="space-y-5">
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
@@ -187,7 +177,7 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
 
                   <Button 
                     type="submit" 
-                    className="w-full py-6 rounded-xl text-base mt-6" 
+                    className="w-full py-7 rounded-xl text-base mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl font-semibold" 
                     disabled={loading}
                   >
                     {loading ? (
@@ -205,7 +195,7 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
 
             {/* Sign Up Tab */}
             <TabsContent value="signup">
-              <Card className="p-8 shadow-sm border-gray-200">
+              <Card className="p-8 shadow-2xl border-0 bg-white/95 backdrop-blur-xl">
                 <form onSubmit={handleSignUp} className="space-y-5">
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
@@ -259,7 +249,7 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
 
                   <Button 
                     type="submit" 
-                    className="w-full py-6 rounded-xl text-base mt-6" 
+                    className="w-full py-7 rounded-xl text-base mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl font-semibold" 
                     disabled={loading}
                   >
                     {loading ? (
@@ -276,7 +266,7 @@ export function AuthPage({ onAuthSuccess, onBack }: AuthPageProps) {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-8 p-5 bg-blue-50 rounded-2xl border border-blue-100">
+          <div className="mt-8 p-5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-100 shadow-lg">
             <p className="text-sm text-blue-800 leading-relaxed">
               💡 <strong>안내:</strong> 로그인하면 여행 일정 저장, 북마크, 맞춤 추천 저장 등의 
               기능을 사용할 수 있습니다.

@@ -8,7 +8,7 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
   const [isLoading, setIsLoading] = useState(true)
 
   const handleError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.error('Image failed to load:', props.src)
+    // Silently handle image errors - they're expected with external URLs
     setDidError(true)
     setIsLoading(false)
   }

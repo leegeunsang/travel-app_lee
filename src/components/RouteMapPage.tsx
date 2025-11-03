@@ -5,6 +5,8 @@ import { Badge } from "./ui/badge";
 import { ChevronLeft, MapPin, Navigation, Clock, Star, Info } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { WeatherWidget } from "./WeatherWidget";
+import { loadKakaoMaps } from "../utils/kakao-loader";
+import { getPlaceImage } from "../utils/naver-api";
 
 interface Place {
   id: string;
@@ -16,6 +18,7 @@ interface Place {
   address: string;
   lat: number;
   lng: number;
+  imageUrl?: string;
 }
 
 interface RouteSegment {
@@ -51,25 +54,229 @@ declare global {
 export function RouteMapPage({ places, routeInfo, transportMode, onBack }: RouteMapPageProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
+  const polylineRef = useRef<any>(null);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState(false);
+  const [placeImages, setPlaceImages] = useState<Map<string, string>>(new Map());
 
+  // Use existing imageUrl from places data (Google Places API)
   useEffect(() => {
-    // Mock implementation - In production, use actual Kakao Maps API
-    console.log("Loading map with places:", places);
-    console.log("Route info:", routeInfo);
+    const imageMap = new Map<string, string>();
     
-    // Simulate map loading
-    setTimeout(() => {
-      setMapLoaded(true);
-      initMockMap();
-    }, 1000);
+    // Use imageUrl from place data if available
+    for (const place of places) {
+      if (place.imageUrl) {
+        imageMap.set(place.id, place.imageUrl);
+      }
+    }
+    
+    setPlaceImages(imageMap);
   }, [places]);
 
-  const initMockMap = () => {
-    // This is a mock implementation
-    // In production, initialize actual Kakao Maps SDK here
-    console.log("Map initialized with", places.length, "places");
+  useEffect(() => {
+    const initMap = async () => {
+      try {
+        setMapError(false);
+        
+        // Load Kakao Maps SDK
+        await loadKakaoMaps();
+        
+        // Initialize map
+        initializeMap();
+      } catch (error: any) {
+        // Silently fail - will show route details instead
+        setMapError(true);
+      }
+    };
+
+    initMap();
+
+    return () => {
+      // Cleanup markers and polyline
+      markersRef.current.forEach(marker => marker.setMap(null));
+      if (polylineRef.current) {
+        polylineRef.current.setMap(null);
+      }
+    };
+  }, []);
+
+  // Update map when places change
+  useEffect(() => {
+    if (mapRef.current && mapLoaded && places.length > 0) {
+      drawRouteOnMap();
+    }
+  }, [places, mapLoaded]);
+
+  const initializeMap = () => {
+    if (!mapContainer.current || !window.kakao) return;
+
+    try {
+      // Calculate center point
+      const centerLat = places.length > 0 
+        ? places.reduce((sum, p) => sum + p.lat, 0) / places.length
+        : 37.5665;
+      const centerLng = places.length > 0
+        ? places.reduce((sum, p) => sum + p.lng, 0) / places.length
+        : 126.9780;
+
+      const options = {
+        center: new window.kakao.maps.LatLng(centerLat, centerLng),
+        level: 8
+      };
+
+      mapRef.current = new window.kakao.maps.Map(mapContainer.current, options);
+      setMapLoaded(true);
+      
+      console.log("✅ Map initialized successfully");
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      setMapError(true);
+    }
+  };
+
+  const drawRouteOnMap = () => {
+    if (!mapRef.current || !window.kakao) return;
+
+    // Clear existing markers and polyline
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null);
+    }
+
+    // Create path coordinates for polyline
+    const pathCoords: any[] = [];
+
+    // Add markers for each place
+    places.forEach((place, index) => {
+      const position = new window.kakao.maps.LatLng(place.lat, place.lng);
+      pathCoords.push(position);
+
+      // Create custom marker content
+      const markerContent = document.createElement('div');
+      markerContent.style.cssText = `
+        position: relative;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+      `;
+
+      // Number badge
+      const badge = document.createElement('div');
+      badge.style.cssText = `
+        width: 40px;
+        height: 40px;
+        background: ${index === 0 ? '#10B981' : index === places.length - 1 ? '#EF4444' : '#3B82F6'};
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      `;
+      badge.textContent = (index + 1).toString();
+      markerContent.appendChild(badge);
+
+      // Label (출발/도착)
+      if (index === 0 || index === places.length - 1) {
+        const label = document.createElement('div');
+        label.style.cssText = `
+          position: absolute;
+          top: -25px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: ${index === 0 ? '#10B981' : '#EF4444'};
+          color: white;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: bold;
+          white-space: nowrap;
+        `;
+        label.textContent = index === 0 ? '출발' : '도착';
+        markerContent.appendChild(label);
+      }
+
+      const customOverlay = new window.kakao.maps.CustomOverlay({
+        position: position,
+        content: markerContent,
+        zIndex: 100 + index
+      });
+
+      customOverlay.setMap(mapRef.current);
+      markersRef.current.push(customOverlay);
+
+      // Add click event
+      markerContent.addEventListener('click', () => {
+        setSelectedPlace(place);
+        
+        // Show info window
+        const infoContent = document.createElement('div');
+        infoContent.style.cssText = `
+          background: white;
+          padding: 12px;
+          border-radius: 8px;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+          min-width: 200px;
+        `;
+        infoContent.innerHTML = `
+          <div style="font-weight: bold; font-size: 14px; margin-bottom: 4px;">${place.name}</div>
+          <div style="font-size: 12px; color: #666; margin-bottom: 4px;">${place.category}</div>
+          <div style="font-size: 11px; color: #999;">${place.address}</div>
+          <div style="display: flex; align-items: center; gap: 4px; margin-top: 6px;">
+            <span style="color: #F59E0B;">⭐</span>
+            <span style="font-size: 12px; font-weight: bold;">${place.rating}</span>
+            <span style="font-size: 11px; color: #999;">(${place.reviewCount})</span>
+          </div>
+        `;
+
+        const infoOverlay = new window.kakao.maps.CustomOverlay({
+          position: position,
+          content: infoContent,
+          yAnchor: 2.5,
+          zIndex: 200
+        });
+
+        infoOverlay.setMap(mapRef.current);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          infoOverlay.setMap(null);
+        }, 3000);
+      });
+    });
+
+    // Draw polyline connecting places
+    if (pathCoords.length > 1) {
+      const polyline = new window.kakao.maps.Polyline({
+        path: pathCoords,
+        strokeWeight: 4,
+        strokeColor: '#3B82F6',
+        strokeOpacity: 0.8,
+        strokeStyle: 'dashed'
+      });
+
+      polyline.setMap(mapRef.current);
+      polylineRef.current = polyline;
+    }
+
+    // Adjust map bounds to show all markers
+    if (places.length > 0) {
+      const bounds = new window.kakao.maps.LatLngBounds();
+      pathCoords.forEach(coord => bounds.extend(coord));
+      mapRef.current.setBounds(bounds);
+      
+      // Add padding
+      setTimeout(() => {
+        const level = mapRef.current.getLevel();
+        mapRef.current.setLevel(level + 1);
+      }, 100);
+    }
   };
 
   const getTransportIcon = (mode: string) => {
@@ -81,12 +288,19 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
     }
   };
 
-  const getPlaceImage = (category: string): string => {
+  const getPlaceImage = (placeId: string, category: string): string => {
+    // First try to get Naver API image
+    const naverImage = placeImages.get(placeId);
+    if (naverImage) {
+      return naverImage;
+    }
+    
+    // Fallback to category images
     const images = {
       "카페": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
       "레스토랑": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
       "관광명소": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
-      "박물관": "https://images.unsplash.com/photo-1565173877742-a47d02b5f9b2",
+      "박물관": "https://images.unsplash.com/photo-1670915564082-9258f2c326c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNldW0lMjBhcmNoaXRlY3R1cmUlMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjExNTg3NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "공원": "https://images.unsplash.com/photo-1519331379826-f10be5486c6f",
       "쇼핑": "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
       "숙박": "https://images.unsplash.com/photo-1566073771259-6a8506099945",
@@ -95,22 +309,15 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
     return images[category] || images["관광명소"];
   };
 
+  const scrollToPlace = (index: number) => {
+    const element = document.getElementById(`place-${index}`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen pb-20">
-      {/* Status Bar */}
-      <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-        <span className="text-lg font-semibold text-black ml-2">9:41</span>
-        <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-            <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-          </div>
-        </div>
-      </div>
-
       {/* Header */}
       <div className="pt-6 px-6 pb-4 border-b border-gray-100">
         <button onClick={onBack} className="mb-4 flex items-center text-gray-600">
@@ -134,120 +341,52 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
         )}
       </div>
 
-      {/* Map Container - Mock */}
+      {/* Map Container */}
       <div 
         ref={mapContainer}
-        className="relative w-full h-80 bg-gradient-to-br from-blue-50 to-green-50"
+        className="relative w-full h-96 bg-gray-100"
       >
-        {!mapLoaded ? (
+        {!mapLoaded && !mapError && (
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
               <p className="text-sm text-gray-600">지도를 불러오는 중...</p>
             </div>
           </div>
-        ) : (
-          <div className="absolute inset-0 p-4">
-            {/* Mock map visualization */}
-            <svg className="w-full h-full" viewBox="0 0 400 300">
-              {/* Draw route path */}
-              <defs>
-                <marker
-                  id="arrowhead"
-                  markerWidth="10"
-                  markerHeight="10"
-                  refX="9"
-                  refY="3"
-                  orient="auto"
+        )}
+        {mapError && (
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <div className="text-center bg-white p-6 rounded-lg shadow-lg max-w-sm">
+              <MapPin className="w-12 h-12 text-orange-500 mx-auto mb-3" />
+              <h3 className="mb-2">지도 로딩 실패</h3>
+              <p className="text-xs text-gray-600 mb-4">
+                카카오맵 SDK를 불러올 수 없습니다.<br/>
+                도메인이 등록되지 않았을 수 있습니다.
+              </p>
+              <div className="text-xs text-left bg-gray-50 p-3 rounded mb-4">
+                <p className="mb-2">해결 방법:</p>
+                <ol className="space-y-1 text-gray-700">
+                  <li>1. <a href="https://developers.kakao.com" target="_blank" rel="noopener" className="text-blue-600 underline">developers.kakao.com</a> 방문</li>
+                  <li>2. 앱 선택 → 플랫폼 → Web 설정</li>
+                  <li>3. 도메인 등록: <code className="bg-white px-1 rounded text-xs">{window.location.origin}</code></li>
+                </ol>
+              </div>
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => window.location.reload()} 
+                  className="w-full bg-blue-500 hover:bg-blue-600"
+                  size="sm"
                 >
-                  <polygon points="0 0, 10 3, 0 6" fill="#3B82F6" />
-                </marker>
-              </defs>
-              
-              {/* Path line */}
-              {places.map((place, index) => {
-                if (index === places.length - 1) return null;
-                const x1 = 50 + (index * 300 / (places.length - 1));
-                const y1 = 150 + Math.sin(index * 0.5) * 50;
-                const x2 = 50 + ((index + 1) * 300 / (places.length - 1));
-                const y2 = 150 + Math.sin((index + 1) * 0.5) * 50;
-                
-                return (
-                  <g key={index}>
-                    <line
-                      x1={x1}
-                      y1={y1}
-                      x2={x2}
-                      y2={y2}
-                      stroke="#3B82F6"
-                      strokeWidth="3"
-                      strokeDasharray="5,5"
-                      markerEnd="url(#arrowhead)"
-                    />
-                  </g>
-                );
-              })}
-              
-              {/* Place markers */}
-              {places.map((place, index) => {
-                const x = 50 + (index * 300 / (places.length - 1));
-                const y = 150 + Math.sin(index * 0.5) * 50;
-                
-                return (
-                  <g key={place.id} onClick={() => setSelectedPlace(place)} style={{ cursor: 'pointer' }}>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="20"
-                      fill={selectedPlace?.id === place.id ? "#EF4444" : "#3B82F6"}
-                      stroke="white"
-                      strokeWidth="3"
-                    />
-                    <text
-                      x={x}
-                      y={y}
-                      textAnchor="middle"
-                      dy=".3em"
-                      fill="white"
-                      fontSize="14"
-                      fontWeight="bold"
-                    >
-                      {index + 1}
-                    </text>
-                    {index === 0 && (
-                      <text
-                        x={x}
-                        y={y - 35}
-                        textAnchor="middle"
-                        fill="#059669"
-                        fontSize="12"
-                        fontWeight="bold"
-                      >
-                        출발
-                      </text>
-                    )}
-                    {index === places.length - 1 && (
-                      <text
-                        x={x}
-                        y={y - 35}
-                        textAnchor="middle"
-                        fill="#DC2626"
-                        fontSize="12"
-                        fontWeight="bold"
-                      >
-                        도착
-                      </text>
-                    )}
-                  </g>
-                );
-              })}
-            </svg>
-
-            {/* Info badge */}
-            <div className="absolute top-4 left-4 bg-white/95 backdrop-blur px-3 py-2 rounded-lg shadow-lg">
-              <div className="flex items-center gap-2 text-xs">
-                <Info className="w-4 h-4 text-blue-500" />
-                <span className="text-gray-700">마커를 클릭하여 장소 정보 확인</span>
+                  페이지 새로고침
+                </Button>
+                <Button 
+                  onClick={onBack}
+                  variant="outline" 
+                  className="w-full"
+                  size="sm"
+                >
+                  뒤로 가기
+                </Button>
               </div>
             </div>
           </div>
@@ -283,18 +422,26 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
           {places.map((place, index) => (
             <Card 
               key={place.id}
+              id={`place-${index}`}
               className={`p-4 cursor-pointer transition-all ${
                 selectedPlace?.id === place.id 
                   ? 'border-2 border-blue-500 bg-blue-50' 
                   : 'hover:bg-gray-50'
               }`}
-              onClick={() => setSelectedPlace(place)}
+              onClick={() => {
+                setSelectedPlace(place);
+                if (mapRef.current && mapLoaded) {
+                  const position = new window.kakao.maps.LatLng(place.lat, place.lng);
+                  mapRef.current.setCenter(position);
+                  mapRef.current.setLevel(3);
+                }
+              }}
             >
               <div className="flex gap-3">
                 <div className="flex-shrink-0">
                   <div className="relative w-16 h-16 overflow-hidden">
                     <ImageWithFallback
-                      src={getPlaceImage(place.category)}
+                      src={getPlaceImage(place.id, place.category)}
                       alt={place.name}
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -333,10 +480,6 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
                         <Clock className="w-3 h-3" />
                         <span>{routeInfo.routes[index].timeText}</span>
                       </div>
-                      <Badge variant="outline" className="text-xs">
-                        {getTransportIcon(transportMode)} {routeInfo.routes[index].transportMode === "WALK" ? "도보" : 
-                         routeInfo.routes[index].transportMode === "TRANSIT" ? "대중교통" : "자동차"}
-                      </Badge>
                     </div>
                   )}
                 </div>
@@ -352,10 +495,10 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
             여행 팁
           </h3>
           <ul className="text-xs text-gray-700 space-y-1">
+            <li>• 지도의 마커를 클릭하면 상세 정보를 볼 수 있습니다</li>
             <li>• 각 장소에서 충분한 시간을 확보하세요</li>
             <li>• 날씨를 확인하고 실내 장소를 포함하세요</li>
             <li>• 점심/저녁 시간에 맞춰 레스토랑을 배치하세요</li>
-            <li>• 이동 시간이 너무 길지 않도록 순서를 조정하세요</li>
           </ul>
         </Card>
 
@@ -363,7 +506,7 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
         <div className="mt-6 space-y-3">
           <Button className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white">
             <Navigation className="w-4 h-4 mr-2" />
-            네비게이션 시작
+            카카오맵으로 경로 보기
           </Button>
           <Button 
             variant="outline" 
@@ -372,14 +515,6 @@ export function RouteMapPage({ places, routeInfo, transportMode, onBack }: Route
           >
             경로 수정
           </Button>
-        </div>
-
-        {/* API Notice */}
-        <div className="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-          <p className="text-xs text-yellow-800">
-            💡 <strong>실제 지도 표시:</strong> 카카오맵 API 키를 설정하면 실제 지도 위에 경로가 표시되며,
-            실시간 교통 정보와 함께 최적 경로를 제공합니다.
-          </p>
         </div>
       </div>
     </div>

@@ -30,6 +30,7 @@ interface Place {
   lat: number;
   lng: number;
   locked?: boolean;
+  imageUrl?: string;
 }
 
 interface RouteSegment {
@@ -108,7 +109,7 @@ export function SmartRoutePage({ travelStyle, location, weather, onBack, onConfi
       
       // Add timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
       
       const response = await fetch(
         `https://${projectId}.supabase.co/functions/v1/make-server-80cc3277/select-places`,
@@ -279,7 +280,7 @@ export function SmartRoutePage({ travelStyle, location, weather, onBack, onConfi
       "카페": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
       "레스토랑": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1",
       "관광명소": "https://images.unsplash.com/photo-1513407030348-c983a97b98d8",
-      "박물관": "https://images.unsplash.com/photo-1565173877742-a47d02b5f9b2",
+      "박물관": "https://images.unsplash.com/photo-1670915564082-9258f2c326c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNldW0lMjBhcmNoaXRlY3R1cmUlMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjExNTg3NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "공원": "https://images.unsplash.com/photo-1519331379826-f10be5486c6f",
       "쇼핑": "https://images.unsplash.com/photo-1441986300917-64674bd600d8",
       "숙박": "https://images.unsplash.com/photo-1566073771259-6a8506099945",
@@ -303,20 +304,6 @@ export function SmartRoutePage({ travelStyle, location, weather, onBack, onConfi
 
   return (
     <div className="bg-white min-h-screen pb-32">
-      {/* Status Bar */}
-      <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-        <span className="text-lg font-semibold text-black ml-2">9:41</span>
-        <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-          <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-            <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-          </div>
-        </div>
-      </div>
-
       <div className="pt-8 px-6">
         <button onClick={onBack} className="mb-6 flex items-center text-gray-600">
           <ChevronLeft className="w-5 h-5" />
@@ -431,7 +418,7 @@ export function SmartRoutePage({ travelStyle, location, weather, onBack, onConfi
                       <div className="flex-shrink-0">
                         <div className="relative w-24 h-24 overflow-hidden">
                           <ImageWithFallback
-                            src={getPlaceImage(place.category)}
+                            src={place.imageUrl || getPlaceImage(place.category)}
                             alt={place.name}
                             className="w-24 h-24 rounded-lg object-cover"
                           />

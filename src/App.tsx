@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Sparkles, User as UserIcon, MapPin, Star, TrendingUp, Compass, Heart } from "lucide-react";
+import { Search, Sparkles, User as UserIcon, MapPin, Star, TrendingUp, Compass, Heart, Users } from "lucide-react";
 import { TripCard } from "./components/TripCard";
 import { BottomNav } from "./components/BottomNav";
 import { SearchPage } from "./components/SearchPage";
@@ -15,7 +15,11 @@ import { ItineraryPage } from "./components/ItineraryPage";
 import { BookmarkPage } from "./components/BookmarkPage";
 import { AttractionsExplore } from "./components/AttractionsExplore";
 import { AttractionDetail } from "./components/AttractionDetail";
+import { PopularHiddenPlacesPage } from "./components/PopularHiddenPlacesPage";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { IOSInstallPrompt } from "./components/IOSInstallPrompt";
+import { PWAStatus } from "./components/PWAStatus";
+import { EnvWarning } from "./components/EnvWarning";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
@@ -23,8 +27,12 @@ import { Toaster } from "./components/ui/sonner";
 import { getSupabaseClient } from "./utils/supabase/client";
 import { registerServiceWorker } from "./utils/pwa";
 import { motion } from "motion/react";
+import { WeatherTestPage } from "./components/WeatherTestPage";
+import { KakaoDebugPage } from "./components/KakaoDebugPage";
+import { KakaoRestApiTest } from "./components/KakaoRestApiTest";
+import { loadKakaoMapScript } from "./utils/kakao-script-loader";
 
-type Page = "home" | "search" | "survey" | "recommendation" | "routes" | "smartroute" | "routemap" | "map" | "community" | "menu" | "auth" | "profile" | "itineraries" | "bookmarks" | "attractions" | "attraction-detail";
+type Page = "home" | "search" | "survey" | "recommendation" | "routes" | "smartroute" | "routemap" | "map" | "community" | "menu" | "auth" | "profile" | "itineraries" | "bookmarks" | "attractions" | "attraction-detail" | "popular-hidden" | "weather-test" | "kakao-debug" | "kakao-rest-test";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
@@ -49,6 +57,16 @@ export default function App() {
   useEffect(() => {
     checkSession();
     
+    // Check URL hash for direct navigation
+    if (window.location.hash === '#kakao-debug') {
+      setCurrentPage('kakao-debug');
+    }
+    
+    // Load Kakao Maps SDK dynamically (silently fails if domain not registered)
+    loadKakaoMapScript().catch(() => {
+      // Silently fail - app will use REST API fallback automatically
+    });
+    
     // Register Service Worker for PWA (gracefully fails in preview)
     registerServiceWorker().catch(err => {
       console.log('PWA setup skipped:', err.message);
@@ -68,7 +86,7 @@ export default function App() {
       if (!document.querySelector('meta[name="theme-color"]')) {
         const themeColor = document.createElement('meta');
         themeColor.name = 'theme-color';
-        themeColor.content = '#7BA5D6';
+        themeColor.content = '#6366F1';
         document.head.appendChild(themeColor);
       }
       
@@ -242,23 +260,31 @@ export default function App() {
   }, []);
 
   const travelCategories = [
-    { icon: "🌸", title: "봄 여행", color: "bg-pink-50" },
-    { icon: "🏖️", title: "해변", color: "bg-blue-50" },
-    { icon: "⛰️", title: "산악", color: "bg-green-50" },
-    { icon: "🍜", title: "맛집 탐방", color: "bg-orange-50" },
-    { icon: "🏛️", title: "역사 문화", color: "bg-purple-50" },
-    { icon: "🎨", title: "예술", color: "bg-yellow-50" }
+    { icon: "🌸", title: "봄 여행", color: "bg-gradient-to-br from-pink-50 to-rose-100" },
+    { icon: "🏖️", title: "해변", color: "bg-gradient-to-br from-cyan-50 to-blue-100" },
+    { icon: "⛰️", title: "산악", color: "bg-gradient-to-br from-green-50 to-emerald-100" },
+    { icon: "🍜", title: "맛집 탐방", color: "bg-gradient-to-br from-amber-50 to-orange-100" },
+    { icon: "🏛️", title: "역사 문화", color: "bg-gradient-to-br from-indigo-50 to-purple-100" },
+    { icon: "🎨", title: "예술", color: "bg-gradient-to-br from-violet-50 to-fuchsia-100" }
   ];
 
   const handleSearch = (location: string) => {
     setSelectedLocation(location);
-    setCurrentPage("survey");
+    // If travel style is already determined, go to recommendation
+    // Otherwise, need to do survey first
+    if (travelStyle) {
+      setCurrentPage("recommendation");
+    } else {
+      // If no travel style yet, go to survey first
+      setCurrentPage("survey");
+    }
   };
 
   const handleSurveyComplete = (style: string, answers: number[]) => {
     setTravelStyle(style);
     setSurveyAnswers(answers);
-    setCurrentPage("recommendation");
+    // After survey, go to search page to select location
+    setCurrentPage("search");
   };
 
   const handleNavigate = (page: string) => {
@@ -280,7 +306,7 @@ export default function App() {
   // Render current page
   if (currentPage === "auth") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <AuthPage
             onAuthSuccess={handleAuthSuccess}
@@ -293,7 +319,7 @@ export default function App() {
 
   if (currentPage === "profile") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <ProfilePage
             userId={userId}
@@ -311,7 +337,7 @@ export default function App() {
 
   if (currentPage === "itineraries") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <ItineraryPage
             userId={userId}
@@ -326,7 +352,7 @@ export default function App() {
 
   if (currentPage === "bookmarks") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <BookmarkPage
             userId={userId}
@@ -341,12 +367,13 @@ export default function App() {
 
   if (currentPage === "search") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <SearchPage 
             onSearch={handleSearch}
             onBack={() => setCurrentPage("home")}
             onExploreAttractions={() => setCurrentPage("attractions")}
+            onPopularHidden={() => setCurrentPage("popular-hidden")}
           />
           <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
@@ -356,11 +383,11 @@ export default function App() {
 
   if (currentPage === "survey") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <SurveyPage
             onComplete={handleSurveyComplete}
-            onBack={() => setCurrentPage("search")}
+            onBack={() => setCurrentPage("home")}
           />
         </div>
       </div>
@@ -368,14 +395,20 @@ export default function App() {
   }
 
   if (currentPage === "recommendation") {
+    // Redirect to search if no location selected
+    if (!selectedLocation || selectedLocation.trim() === "") {
+      setTimeout(() => setCurrentPage("search"), 0);
+      return null;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <RecommendationPage
-            travelStyle={travelStyle}
+            travelStyle={travelStyle || "모험가"}
             location={selectedLocation}
             accessToken={accessToken}
-            onBack={() => setCurrentPage("survey")}
+            onBack={() => setCurrentPage("search")}
             onShowMap={() => setCurrentPage("map")}
             onShowRoutes={() => setCurrentPage("routes")}
             onShowSmartRoute={(weather) => {
@@ -383,6 +416,7 @@ export default function App() {
               setCurrentPage("smartroute");
             }}
             onSaveItinerary={isAuthenticated ? () => setCurrentPage("itineraries") : undefined}
+            onRetakeSurvey={() => setCurrentPage("survey")}
           />
           <BottomNav currentPage="search" onNavigate={handleNavigate} />
         </div>
@@ -391,11 +425,17 @@ export default function App() {
   }
 
   if (currentPage === "routes") {
+    // Redirect to search if no location selected
+    if (!selectedLocation || selectedLocation.trim() === "") {
+      setTimeout(() => setCurrentPage("search"), 0);
+      return null;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <RoutesPage
-            travelStyle={travelStyle}
+            travelStyle={travelStyle || "모험가"}
             location={selectedLocation}
             onBack={() => setCurrentPage("recommendation")}
           />
@@ -406,11 +446,17 @@ export default function App() {
   }
 
   if (currentPage === "smartroute") {
+    // Redirect to search if no location selected
+    if (!selectedLocation || selectedLocation.trim() === "") {
+      setTimeout(() => setCurrentPage("search"), 0);
+      return null;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <SmartRoutePage
-            travelStyle={travelStyle}
+            travelStyle={travelStyle || "모험가"}
             location={selectedLocation}
             weather={currentWeather}
             onBack={() => setCurrentPage("recommendation")}
@@ -429,7 +475,7 @@ export default function App() {
 
   if (currentPage === "routemap") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <RouteMapPage
             places={confirmedPlaces}
@@ -444,8 +490,14 @@ export default function App() {
   }
 
   if (currentPage === "map") {
+    // Redirect to search if no location selected
+    if (!selectedLocation || selectedLocation.trim() === "") {
+      setTimeout(() => setCurrentPage("search"), 0);
+      return null;
+    }
+
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <MapPage
             location={selectedLocation}
@@ -460,7 +512,7 @@ export default function App() {
 
   if (currentPage === "attractions") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <AttractionsExplore
             onBack={() => setCurrentPage("home")}
@@ -477,7 +529,7 @@ export default function App() {
 
   if (currentPage === "attraction-detail") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
         <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
           <AttractionDetail
             contentId={selectedAttractionId}
@@ -489,30 +541,65 @@ export default function App() {
     );
   }
 
+  if (currentPage === "popular-hidden") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <PopularHiddenPlacesPage
+            location={selectedLocation || "서울"}
+            onBack={() => setCurrentPage("home")}
+          />
+          <BottomNav currentPage="search" onNavigate={handleNavigate} />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === "weather-test") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <WeatherTestPage />
+        </div>
+      </div>
+    );
+  }
+
+  if (currentPage === "kakao-debug") {
+    return <KakaoDebugPage />;
+  }
+
+  if (currentPage === "kakao-rest-test") {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+        <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl">
+          <KakaoRestApiTest onBack={() => setCurrentPage("home")} />
+        </div>
+      </div>
+    );
+  }
+
   if (currentPage === "community") {
     return (
-      <div className="min-h-screen bg-gray-100 flex justify-center">
-        <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-xl">
-          {/* Status Bar */}
-          <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-            <span className="text-lg font-semibold text-black ml-2">9:41</span>
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-              <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-              <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-              <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-              <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-                <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-              </div>
-            </div>
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+        <div className="w-full max-w-[412px] bg-white/80 backdrop-blur-xl min-h-screen shadow-2xl flex flex-col">
+          <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-8 mb-6">
+            <h1 className="text-2xl text-white font-semibold">커뮤니티</h1>
+            <p className="text-gray-300 text-sm mt-2">여행 후기와 일정을 공유하세요</p>
           </div>
-
-          <div className="pt-8 px-6">
-            <h1 className="text-2xl mb-6">커뮤니티</h1>
-            <div className="text-center py-20 text-gray-400">
-              <p>커뮤니티 기능은 곧 제공될 예정입니다.</p>
-              <p className="text-sm mt-2">다른 여행자들의 후기와 일정을 공유하세요!</p>
-            </div>
+          <div className="px-6 flex-1 flex items-center justify-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-100 to-purple-200 rounded-3xl flex items-center justify-center">
+                <Users className="w-12 h-12 text-indigo-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">곧 만나요!</h3>
+              <p className="text-gray-600 mb-2">커뮤니티 기능은 곧 제공될 예정입니다.</p>
+              <p className="text-sm text-gray-500">다른 여행자들과 소통하고 정보를 나눠보세요</p>
+            </motion.div>
           </div>
           <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
         </div>
@@ -522,25 +609,11 @@ export default function App() {
 
   // Home page
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-xl relative">
-        {/* Status Bar - iPhone Style */}
-        <div className="sticky top-0 z-50 bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-          <span className="text-lg font-semibold text-black ml-2">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-              <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
-            </div>
-          </div>
-        </div>
-
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 via-white to-amber-50/30 flex justify-center">
+      <div className="w-full max-w-[412px] bg-white min-h-screen pb-20 shadow-2xl relative">
         {/* Hero Section */}
-        <div className="px-8 pt-4">
-          <div className="relative h-48 overflow-hidden rounded-3xl">
+        <div className="px-6 pt-6">
+          <div className="relative h-64 overflow-hidden rounded-3xl shadow-2xl">
             <motion.div
               key={heroImageIndex}
               initial={{ opacity: 0 }}
@@ -555,22 +628,22 @@ export default function App() {
                 crossOrigin="anonymous"
               />
             </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-500/30 via-transparent to-black/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/60"></div>
             
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="absolute top-4 left-4 right-4"
+              className="absolute top-6 left-6 right-6"
             >
-              <Badge className="mb-3 bg-blue-500/90 text-white border-0 px-3 py-1.5">
-                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
+              <Badge className="mb-4 bg-gradient-to-r from-indigo-600 to-indigo-800 text-white border-0 px-4 py-2 shadow-lg">
+                <Sparkles className="w-4 h-4 mr-2" />
                 AI 기반 추천 시스템
               </Badge>
-              <h1 className="text-white mb-2 drop-shadow-2xl leading-tight text-3xl">
+              <h1 className="text-white mb-3 drop-shadow-2xl leading-tight text-4xl tracking-tight">
                 Escape the<br />Ordinary!!!
               </h1>
-              <p className="text-white/95 drop-shadow text-sm">
+              <p className="text-white/95 drop-shadow-lg text-base">
                 Plan Less, Travel More.
               </p>
             </motion.div>
@@ -580,34 +653,38 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="absolute bottom-4 left-4 right-4"
+              className="absolute bottom-6 left-6 right-6"
             >
               <button 
                 onClick={() => setCurrentPage("search")}
-                className="w-full bg-white rounded-full px-5 py-3 flex items-center gap-3 shadow-lg hover:shadow-xl transition-all"
+                className="w-full bg-white/95 backdrop-blur-xl rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl hover:shadow-3xl hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
-                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                <span className="flex-1 text-left text-gray-400 text-sm">어느 곳이든지 검색해 보세요.</span>
-                <Compass className="w-4 h-4 text-gray-300 flex-shrink-0" />
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl">
+                  <Search className="w-5 h-5 text-white" />
+                </div>
+                <span className="flex-1 text-left text-indigo-900 font-medium">어디로 떠나시나요?</span>
+                <Compass className="w-5 h-5 text-amber-500" />
               </button>
             </motion.div>
           </div>
         </div>
 
         {/* AI Algorithm Section */}
-        <div className="px-8 mt-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="px-6 mt-8">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg mb-1">AI 맞춤 추천</h2>
+              <h2 className="text-xl mb-1.5">AI 맞춤 추천</h2>
               <p className="text-sm text-gray-500">당신만을 위한 여행 코스</p>
             </div>
-            <Sparkles className="w-6 h-6 text-blue-500 flex-shrink-0" />
+            <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-xl">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
           </div>
           <motion.div 
-            whileHover={{ scale: 1.005 }}
-            whileTap={{ scale: 0.995 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setCurrentPage("survey")}
-            className="relative h-48 rounded-3xl overflow-hidden shadow-lg cursor-pointer"
+            className="relative h-56 rounded-3xl overflow-hidden shadow-2xl cursor-pointer"
           >
             <motion.div
               key={aiImageIndex}
@@ -623,48 +700,55 @@ export default function App() {
                 crossOrigin="anonymous"
               />
             </motion.div>
-            <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/90 via-indigo-800/40 to-transparent"></div>
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-orange-500/90 text-white border-0 px-3 py-1.5 text-xs">
+            <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/95 via-indigo-700/50 to-transparent"></div>
+            <div className="absolute top-5 right-5">
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-4 py-2 shadow-xl">
+                <Sparkles className="w-3.5 h-3.5 mr-1.5" />
                 GPT 기반
               </Badge>
             </div>
-            <div className="absolute bottom-4 left-4 right-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm">AI 성향 분석</span>
+            <div className="absolute bottom-5 left-5 right-5 text-white">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span className="font-medium">AI 성향 분석</span>
               </div>
-              <p className="text-base mb-4">
+              <p className="text-base mb-5 leading-relaxed">
                 최적의 여행 코스를 제공합니다
               </p>
-              <Button className="w-full bg-white text-blue-600 hover:bg-white/95 h-11 rounded-xl text-sm">
-                성향 분석 시작하기
+              <Button className="w-full bg-white text-indigo-600 hover:bg-white/95 h-12 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all">
+                성향 분석 시작하기 →
               </Button>
             </div>
           </motion.div>
         </div>
 
         {/* Popular Destinations */}
-        <div className="px-8 mt-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="px-6 mt-8">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg mb-1">인기 여행지</h2>
+              <h2 className="text-xl mb-1.5">인기 여행지</h2>
               <p className="text-sm text-gray-500">많은 사람들이 찾는 장소</p>
             </div>
-            <TrendingUp className="w-6 h-6 text-blue-500 flex-shrink-0" />
+            <div className="p-2.5 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {popularDestinations.map((dest, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 onClick={() => {
                   setSelectedLocation(dest.title);
                   setCurrentPage("survey");
                 }}
-                className="relative h-44 rounded-3xl overflow-hidden cursor-pointer group shadow-lg"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative h-52 rounded-3xl overflow-hidden cursor-pointer shadow-2xl"
               >
                 <motion.div
                   key={currentImageIndices[index] || 0}
@@ -676,23 +760,25 @@ export default function App() {
                   <ImageWithFallback
                     src={dest.images[(currentImageIndices[index] || 0)]}
                     alt={dest.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                     crossOrigin="anonymous"
                   />
                 </motion.div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <MapPin className="w-4 h-4 text-white flex-shrink-0" />
-                    <span className="text-white text-lg">{dest.title}</span>
-                  </div>
-                  <p className="text-white/90 text-sm mb-3">{dest.subtitle}</p>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-white text-sm">{dest.rating}</span>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
+                <div className="absolute bottom-5 left-5 right-5">
+                  <div className="flex items-center gap-2.5 mb-2">
+                    <div className="p-1.5 bg-white/20 backdrop-blur-sm rounded-lg">
+                      <MapPin className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-white/80 text-sm">
+                    <span className="text-white text-xl font-semibold">{dest.title}</span>
+                  </div>
+                  <p className="text-white/95 text-sm mb-4 leading-relaxed">{dest.subtitle}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                      <span className="text-white text-sm font-medium">{dest.rating}</span>
+                    </div>
+                    <span className="text-white/90 text-sm">
                       {dest.reviews.toLocaleString()}개 리뷰
                     </span>
                   </div>
@@ -703,45 +789,89 @@ export default function App() {
         </div>
 
         {/* Public Data Tourism Info */}
-        <div className="px-8 mt-6">
-          <div className="flex items-center justify-between mb-4">
+        <div className="px-6 mt-8">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-lg mb-1">전국 관광지 탐색</h2>
+              <h2 className="text-xl mb-1.5">전국 관광지 탐색</h2>
               <p className="text-sm text-gray-500">공공데이터 실시간 정보</p>
             </div>
-            <MapPin className="w-6 h-6 text-green-500 flex-shrink-0" />
+            <div className="p-2.5 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
           </div>
           <motion.div
-            whileHover={{ scale: 1.005 }}
-            whileTap={{ scale: 0.995 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setCurrentPage("attractions")}
-            className="relative h-40 rounded-3xl overflow-hidden shadow-lg cursor-pointer bg-gradient-to-br from-green-500 to-blue-500"
+            className="relative h-48 rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-gradient-to-br from-teal-500 via-emerald-500 to-cyan-600"
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-            <div className="absolute top-4 right-4">
-              <Badge className="bg-green-500/90 text-white border-0 px-3 py-1.5 text-xs">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+            <div className="absolute top-5 right-5">
+              <Badge className="bg-white/90 text-green-700 border-0 px-4 py-2 shadow-lg font-medium">
                 한국관광공사
               </Badge>
             </div>
-            <div className="absolute bottom-4 left-4 right-4 text-white">
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm">지역별 관광정보</span>
+            <div className="absolute bottom-5 left-5 right-5 text-white">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <span className="font-medium">지역별 관광정보</span>
               </div>
-              <p className="text-base mb-4">
+              <p className="text-base mb-5 leading-relaxed">
                 전국 관광지, 축제, 행사 정보를 확인하세요
               </p>
-              <Button className="w-full bg-white text-green-600 hover:bg-white/95 h-11 rounded-xl text-sm">
-                관광지 둘러보기
+              <Button className="w-full bg-white text-green-600 hover:bg-white/95 h-12 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all">
+                관광지 둘러보기 →
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Popular & Hidden Places Section */}
+        <div className="px-6 mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl mb-1.5">인기 & 숨은 명소</h2>
+              <p className="text-sm text-gray-500">AI 기반 장소 분석</p>
+            </div>
+            <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+          </div>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setCurrentPage("popular-hidden")}
+            className="relative h-48 rounded-3xl overflow-hidden shadow-2xl cursor-pointer bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700"
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+            <div className="absolute top-5 right-5">
+              <Badge className="bg-white/90 text-indigo-700 border-0 px-4 py-2 shadow-lg font-medium">
+                리뷰 기반 분석
+              </Badge>
+            </div>
+            <div className="absolute bottom-5 left-5 right-5 text-white">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <span className="font-medium">스마트 장소 추천</span>
+              </div>
+              <p className="text-base mb-5 leading-relaxed">
+                인기 명소와 숨겨진 보석 같은 장소를 찾아보세요
+              </p>
+              <Button className="w-full bg-white text-indigo-700 hover:bg-white/95 h-12 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all">
+                장소 탐색하기 →
               </Button>
             </div>
           </motion.div>
         </div>
 
         {/* Travel Categories */}
-        <div className="px-8 mt-6">
-          <h2 className="text-lg mb-4">여행 테마</h2>
-          <div className="grid grid-cols-3 gap-3">
+        <div className="px-6 mt-8 pb-24">
+          <h2 className="text-xl mb-5">여행 테마</h2>
+          <div className="grid grid-cols-3 gap-4">
             {travelCategories.map((category, index) => (
               <motion.button
                 key={index}
@@ -751,10 +881,10 @@ export default function App() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setCurrentPage("search")}
-                className={`${category.color} p-4 rounded-2xl hover:shadow-lg transition-all shadow-sm`}
+                className={`${category.color} p-5 rounded-2xl shadow-lg hover:shadow-xl transition-all border border-white/50`}
               >
-                <div className="text-2xl mb-2">{category.icon}</div>
-                <div className="text-xs text-gray-700">{category.title}</div>
+                <div className="text-3xl mb-2.5">{category.icon}</div>
+                <div className="text-xs text-gray-800 font-medium">{category.title}</div>
               </motion.button>
             ))}
           </div>
@@ -778,10 +908,10 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="p-5 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 shadow-sm"
+              className="p-5 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-100 shadow-sm"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-11 h-11 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
+                <div className="w-11 h-11 bg-indigo-200 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
                   👤
                 </div>
                 <div className="flex-1">
@@ -803,10 +933,10 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="p-5 bg-gradient-to-br from-green-50 to-white rounded-2xl border border-green-100 shadow-sm"
+              className="p-5 bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-100 shadow-sm"
             >
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-11 h-11 bg-green-200 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
+                <div className="w-11 h-11 bg-amber-200 rounded-full flex items-center justify-center flex-shrink-0 text-lg">
                   👤
                 </div>
                 <div className="flex-1">
@@ -826,8 +956,29 @@ export default function App() {
           </div>
         </div>
 
+        {/* Developer Tools - Hidden Buttons */}
+        <div className="fixed bottom-20 right-4 flex flex-col gap-2 z-50">
+          <button
+            onClick={() => setCurrentPage("kakao-debug")}
+            className="w-10 h-10 bg-red-500 text-white rounded-full shadow-lg flex items-center justify-center text-xs opacity-30 hover:opacity-100 transition"
+            title="카카오맵 진단 도구"
+          >
+            🔧
+          </button>
+          <button
+            onClick={() => setCurrentPage("kakao-rest-test")}
+            className="w-10 h-10 bg-gray-700 text-white rounded-full shadow-lg flex items-center justify-center text-xs opacity-30 hover:opacity-100 transition"
+            title="REST API 테스트"
+          >
+            🧪
+          </button>
+        </div>
+
         <BottomNav currentPage={currentPage} onNavigate={handleNavigate} />
         <PWAInstallPrompt />
+        <IOSInstallPrompt />
+        <PWAStatus />
+        <EnvWarning />
         <Toaster />
       </div>
     </div>

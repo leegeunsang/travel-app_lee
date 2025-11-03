@@ -16,6 +16,7 @@ interface RecommendationPageProps {
   onShowRoutes: () => void;
   onShowSmartRoute: (weather: any) => void;
   onSaveItinerary?: () => void;
+  onRetakeSurvey?: () => void;
 }
 
 interface WeatherData {
@@ -26,7 +27,7 @@ interface WeatherData {
   windSpeed: number;
 }
 
-export function RecommendationPage({ travelStyle, location, accessToken, onBack, onShowMap, onShowRoutes, onShowSmartRoute, onSaveItinerary }: RecommendationPageProps) {
+export function RecommendationPage({ travelStyle, location, accessToken, onBack, onShowMap, onShowRoutes, onShowSmartRoute, onSaveItinerary, onRetakeSurvey }: RecommendationPageProps) {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [recommendation, setRecommendation] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -41,38 +42,73 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
       setLoading(true);
       setError(null);
 
+      console.log(`[RecommendationPage] Fetching weather and recommendations for ${location} (${travelStyle})`);
+
       // Fetch weather
       let weatherData = null;
       try {
-        const weatherResponse = await fetch(
-          `https://${projectId}.supabase.co/functions/v1/make-server-80cc3277/weather/${encodeURIComponent(location)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${publicAnonKey}`
-            }
+        // First check if the API is available
+        if (!projectId || !publicAnonKey) {
+          console.error("[RecommendationPage] ❌ Supabase configuration missing");
+          throw new Error("Supabase configuration missing");
+        }
+
+        const weatherUrl = `https://${projectId}.supabase.co/functions/v1/make-server-80cc3277/weather/${encodeURIComponent(location)}`;
+        console.log(`[RecommendationPage] Weather API URL:`, weatherUrl);
+        console.log(`[RecommendationPage] Location:`, location);
+        
+        const weatherResponse = await fetch(weatherUrl, {
+          headers: {
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json'
           }
-        );
+        });
+
+        console.log(`[RecommendationPage] Weather API response status: ${weatherResponse.status}`);
+
+        if (weatherResponse.status === 404) {
+          console.error(`[RecommendationPage] ❌ 404 ERROR: Edge Function not found!`);
+          console.error(`[RecommendationPage] Please ensure the Supabase Edge Function is deployed.`);
+          console.error(`[RecommendationPage] Expected URL: ${weatherUrl}`);
+          throw new Error("Edge Function not deployed (404)");
+        }
 
         if (weatherResponse.ok) {
           weatherData = await weatherResponse.json();
+          console.log(`[RecommendationPage] Weather data received:`, weatherData);
           
           // Set weather data if valid
           if (weatherData && !weatherData.error) {
             setWeather(weatherData);
             
             if (weatherData.isMock) {
-              console.log("Using mock weather data");
+              if (weatherData.error === 'invalid_api_key') {
+                console.error("[RecommendationPage] ❌ Invalid OPENWEATHER_API_KEY - using mock data");
+              } else {
+                console.warn("[RecommendationPage] ⚠️ Using mock weather data (OPENWEATHER_API_KEY may not be set)");
+              }
+            } else {
+              console.log("[RecommendationPage] ✅ Real weather data loaded");
             }
           }
         } else {
-          console.log("Weather API returned error, using fallback");
+          const errorText = await weatherResponse.text();
+          console.error(`[RecommendationPage] Weather API error: ${weatherResponse.status} - ${errorText}`);
+          
+          if (weatherResponse.status === 401) {
+            console.error("[RecommendationPage] 🔑 401 Unauthorized - Invalid API key");
+          }
+          
+          throw new Error(`Weather API error: ${weatherResponse.status}`);
         }
       } catch (weatherError) {
-        console.log("Weather fetch failed, continuing without weather:", weatherError);
+        console.error("[RecommendationPage] Weather fetch failed:", weatherError);
+        console.error("[RecommendationPage] Falling back to mock weather data");
       }
       
       // Use fallback weather if none was retrieved
       if (!weatherData) {
+        console.log("[RecommendationPage] Using fallback weather data");
         weatherData = {
           temperature: 20,
           description: "맑음",
@@ -158,62 +194,66 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
   const getTravelStyleColor = (style: string) => {
     switch (style) {
       case "힐링":
-        return "bg-green-100 text-green-700 border-green-200";
+        return "bg-gray-100 text-gray-800 border-gray-300";
       case "관광":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return "bg-gray-200 text-gray-900 border-gray-400";
       case "액티비티":
-        return "bg-orange-100 text-orange-700 border-orange-200";
+        return "bg-gray-300 text-gray-900 border-gray-500";
       default:
         return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-[412px] bg-white min-h-screen shadow-xl pb-20">
-        {/* Status Bar */}
-        <div className="bg-white px-8 py-6 flex items-center justify-between border-b border-gray-100">
-          <span className="text-lg font-semibold text-black ml-2">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-1.5 h-1.5 bg-gray-900 rounded-full"></div>
-            <div className="w-6 h-3 border-2 border-gray-900 rounded-sm relative ml-0.5">
-              <div className="absolute right-0 top-0.5 bottom-0.5 w-3 h-1.5 bg-gray-900 rounded-sm"></div>
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-white flex justify-center">
+      <div className="w-full max-w-[412px] bg-white/80 backdrop-blur-xl min-h-screen shadow-2xl pb-20">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-8">
+          <div className="flex items-center gap-4">
+            <motion.button 
+              onClick={onBack} 
+              whileTap={{ scale: 0.9 }}
+              className="p-2.5 -ml-2 hover:bg-white/20 rounded-xl transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6 text-white" />
+            </motion.button>
+            <div>
+              <h1 className="text-2xl text-white font-semibold">맞춤형 여행 추천</h1>
+              <p className="text-gray-300 text-sm mt-1">{location} 여행</p>
             </div>
           </div>
         </div>
 
-        {/* Header */}
-        <div className="bg-white px-8 py-4 border-b border-gray-100">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={onBack} 
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ArrowLeft className="w-6 h-6 text-gray-700" />
-            </button>
-            <h1 className="text-xl">맞춤형 여행 추천</h1>
-          </div>
-        </div>
-
-        <div className="px-8 py-6">
+        <div className="px-6 py-6">
           {/* Travel Style Result */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="p-6 mb-4 shadow-sm border-2">
-              <div className="flex items-center gap-4">
-                <div className="text-5xl">{getTravelStyleIcon(travelStyle)}</div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">당신의 여행 성향</p>
-                  <div className={`inline-block px-5 py-2 rounded-xl border-2 ${getTravelStyleColor(travelStyle)}`}>
-                    {travelStyle}형
+            <Card className="p-6 mb-5 shadow-xl border-0 bg-gradient-to-br from-indigo-50 to-purple-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="text-6xl">{getTravelStyleIcon(travelStyle)}</div>
+                  <div>
+                    <p className="text-sm text-gray-700 mb-2 font-medium">당신의 여행 성향</p>
+                    <div className={`inline-block px-6 py-2.5 rounded-xl border-2 ${getTravelStyleColor(travelStyle)} font-semibold text-lg`}>
+                      {travelStyle}형
+                    </div>
                   </div>
                 </div>
+                {onRetakeSurvey && (
+                  <motion.div whileTap={{ scale: 0.9 }}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onRetakeSurvey}
+                      className="text-sm font-medium border-2 hover:bg-indigo-50"
+                    >
+                      재분석
+                    </Button>
+                  </motion.div>
+                )}
               </div>
             </Card>
           </motion.div>
@@ -226,7 +266,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
           >
             <Card className="p-6 mb-4 shadow-sm border-2 border-gray-200">
               <div className="flex items-center gap-3">
-                <MapPin className="w-6 h-6 text-blue-600" />
+                <MapPin className="w-6 h-6 text-gray-700" />
                 <div>
                   <p className="text-sm text-gray-500 mb-1">여행 지역</p>
                   <p className="text-lg text-gray-800">{location}</p>
@@ -239,7 +279,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
           {loading ? (
             <Card className="p-6 mb-4 shadow-sm border-2 border-gray-200">
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-gray-700" />
               </div>
             </Card>
           ) : weather && (
@@ -260,7 +300,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Card className="p-6 mb-4 shadow-sm border-2 border-purple-100 bg-gradient-to-br from-purple-50 to-white">
+            <Card className="p-6 mb-4 shadow-sm border-2 border-indigo-100 bg-gradient-to-br from-indigo-50/30 to-white">
               <div className="flex items-center gap-3 mb-4">
                 <div className="text-3xl">🤖</div>
                 <h3 className="text-lg text-gray-800">AI 맞춤 추천</h3>
@@ -279,8 +319,8 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
           </motion.div>
 
           {error && (
-            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 mb-4">
-              <p className="text-sm text-yellow-800">⚠️ {error}</p>
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-4">
+              <p className="text-sm text-red-800">⚠️ {error}</p>
             </div>
           )}
 
@@ -289,6 +329,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
             <AttractionsList 
               location={location} 
               accessToken={accessToken}
+              weather={weather}
             />
           </div>
 
@@ -296,7 +337,7 @@ export function RecommendationPage({ travelStyle, location, accessToken, onBack,
           <div className="space-y-3">
             <Button 
               onClick={() => onShowSmartRoute(weather)} 
-              className="w-full py-7 rounded-2xl text-base shadow-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="w-full py-7 rounded-2xl text-base shadow-sm bg-gradient-to-r from-indigo-600 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700"
               size="lg"
             >
               <Sparkles className="w-5 h-5 mr-2" />

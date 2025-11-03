@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { MapPin, List } from "lucide-react";
 import { AttractionsList } from "./AttractionsList";
+import { loadKakaoMaps } from "../utils/kakao-loader";
 
 interface MapPageProps {
   location: string;
@@ -22,24 +23,19 @@ export function MapPage({ location, accessToken, onBack }: MapPageProps) {
   const [showAttractions, setShowAttractions] = useState(true);
 
   useEffect(() => {
-    // Load Kakao Map script
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_APP_KEY&libraries=services&autoload=false`;
-    script.async = true;
-    
-    script.onload = () => {
-      if (window.kakao && window.kakao.maps) {
-        window.kakao.maps.load(() => {
-          initMap();
-        });
+    const initializeMap = async () => {
+      try {
+        // Load Kakao Maps SDK
+        await loadKakaoMaps();
+        
+        // Initialize map
+        initMap();
+      } catch (error) {
+        // Silently fail - will show place list instead
       }
     };
 
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
+    initializeMap();
   }, [location]);
 
   const initMap = () => {
@@ -85,7 +81,7 @@ export function MapPage({ location, accessToken, onBack }: MapPageProps) {
             ← 돌아가기
           </button>
           <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-blue-500" />
+            <MapPin className="w-5 h-5 text-gray-700" />
             <span className="font-medium">{location}</span>
           </div>
         </div>
@@ -127,8 +123,8 @@ export function MapPage({ location, accessToken, onBack }: MapPageProps) {
           />
         )}
 
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-sm text-blue-800">
+        <div className="mt-6 p-4 bg-indigo-50 rounded-lg">
+          <p className="text-sm text-indigo-900">
             💡 <strong>지도 기능 안내:</strong> 카카오맵 API 키를 설정하면 실제 지도가 표시되며, 
             마커 클릭 시 상세 정보와 경로 안내를 제공합니다.
           </p>

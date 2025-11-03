@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
   <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#7BA5D6">
-  <meta name="description" content="Escape the Ordinary - AI 기반 맞춤형 여행 추천 서비스">
-  <meta name="keywords" content="여행, 추천, AI, 관광지, 여행앱, Escape the Ordinary, Travel More">
+  <meta name="theme-color" content="#6366F1">
+  <meta name="description" content="Escape the Ordinary - AI 기반 맞춤형 여행 추천 서비스. 여행 성향 분석, 실시간 날씨, 맞춤형 여행 코스 추천">
+  <meta name="keywords" content="여행, 추천, AI, 관광지, 여행앱, Escape the Ordinary, Travel More, 여행 성향 분석, GPT 추천">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
@@ -26,9 +26,17 @@
   <meta name="mobile-web-app-capable" content="yes">
   
   <title>Escape the Ordinary - 여행 추천 앱</title>
+  
+  <!-- Kakao Maps SDK will be loaded dynamically by React -->
+  <script>
+    console.log('[Kakao] 📍 Domain:', window.location.origin);
+    console.log('[Kakao] ℹ️ SDK will be loaded dynamically by React');
+  </script>
 </head>
 <body>
   <div id="root"></div>
+  
+  <!-- Now load React app -->
   <script type="module" src="/main.tsx"></script>
 </body>
 </html>

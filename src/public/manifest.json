@@ -1,12 +1,13 @@
 {
   "name": "Escape the Ordinary - 여행 추천 앱",
   "short_name": "여행앱",
-  "description": "AI 기반 맞춤형 여행 추천 서비스 - Travel More",
+  "description": "AI 기반 맞춤형 여행 추천 서비스. 여행 성향 분석, GPT 추천, 실시간 날씨, 지도 기반 경로 설정까지!",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#7BA5D6",
+  "theme_color": "#6366F1",
   "orientation": "portrait",
+  "scope": "/",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -21,18 +22,26 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshot1.png",
-      "sizes": "412x915",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ],
   "categories": ["travel", "lifestyle", "navigation"],
   "lang": "ko-KR",
   "dir": "ltr",
-  "scope": "/",
-  "display_override": ["window-controls-overlay"],
-  "prefer_related_applications": false
+  "display_override": ["standalone", "fullscreen"],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "여행지 검색",
+      "short_name": "검색",
+      "description": "여행지를 검색하고 추천받기",
+      "url": "/?page=search",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "성향 분석",
+      "short_name": "설문",
+      "description": "나의 여행 성향 분석하기",
+      "url": "/?page=survey",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
 }

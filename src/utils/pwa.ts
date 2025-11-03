@@ -3,15 +3,16 @@
 export const registerServiceWorker = async () => {
   // Check if we're in a supported environment
   if (!('serviceWorker' in navigator)) {
-    console.log('Service Workers not supported in this browser');
+    console.log('❌ Service Workers not supported in this browser');
     return null;
   }
 
-  // Skip Service Worker registration in Figma preview environment
+  // Skip Service Worker registration in development/preview environment
   if (window.location.hostname.includes('figma.site') || 
-      window.location.hostname.includes('localhost')) {
-    console.log('⚠️ Service Worker skipped in preview environment');
-    console.log('💡 Deploy to Vercel/Netlify to enable PWA features');
+      window.location.hostname.includes('localhost') ||
+      window.location.hostname.includes('127.0.0.1')) {
+    console.log('⚠️ Service Worker skipped in preview/development environment');
+    console.log('💡 Deploy to production (Vercel/Netlify) to enable PWA features');
     return null;
   }
 
@@ -20,15 +21,26 @@ export const registerServiceWorker = async () => {
       scope: '/'
     });
     
-    console.log('✅ Service Worker registered successfully:', registration);
+    console.log('✅ Service Worker registered successfully!');
+    console.log('📱 PWA enabled! You can now install this app on your device.');
     
-    // Check for updates
+    // Check for updates periodically
+    setInterval(() => {
+      registration.update();
+    }, 60000); // Check every minute
+    
+    // Handle updates
     registration.addEventListener('updatefound', () => {
       const newWorker = registration.installing;
       if (newWorker) {
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            console.log('🔄 New content available, please refresh.');
+            console.log('🔄 New version available! Refresh to update.');
+            
+            // Optionally notify user
+            if (confirm('새 버전이 있습니다. 지금 업데이트할까요?')) {
+              window.location.reload();
+            }
           }
         });
       }
@@ -37,7 +49,8 @@ export const registerServiceWorker = async () => {
     return registration;
   } catch (error) {
     // Gracefully handle registration errors
-    console.log('⚠️ Service Worker registration failed (this is normal in preview)');
+    console.log('⚠️ Service Worker registration failed');
+    console.error(error);
     console.log('💡 PWA features will work after deployment to production');
     return null;
   }

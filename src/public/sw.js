@@ -1,10 +1,11 @@
 // Service Worker for PWA
-const CACHE_NAME = 'travel-app-v1';
+const CACHE_NAME = 'travel-app-v2';
 const urlsToCache = [
   '/',
-  '/App.tsx',
-  '/styles/globals.css',
-  '/manifest.json'
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Install event - cache files
@@ -41,37 +42,64 @@ self.addEventListener('activate', (event) => {
   return self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Network first, fallback to cache for API calls
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip chrome-extension and other non-http(s) requests
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // API calls - Network first strategy
+  if (url.pathname.includes('/functions/') || 
+      url.hostname.includes('supabase.co') ||
+      url.hostname.includes('openweathermap.org')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Clone and cache the response
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+
+  // Static assets - Cache first strategy
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then((response) => {
-        // Cache hit - return response
         if (response) {
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then((response) => {
+        return fetch(request).then((response) => {
           // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (!response || response.status !== 200 || response.type === 'error') {
             return response;
           }
 
-          // Clone the response
+          // Clone and cache the response
           const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
 
           return response;
         }).catch(() => {
-          // Offline fallback
-          return caches.match('/');
+          // Offline fallback for navigation
+          if (request.mode === 'navigate') {
+            return caches.match('/');
+          }
         });
       })
   );

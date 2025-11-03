@@ -101,7 +101,7 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
           name: place.name,
           description: place.category.split('>').pop()?.trim() || "추천 장소",
           order: index + 1,
-          image: getImageForCategory(index)
+          image: place.imageUrl || getImageForCategory(index)
         });
       }
     });
@@ -122,7 +122,7 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
           name: place.name,
           description: place.category.split('>').pop()?.trim() || "추천 장소",
           order: index + 1,
-          image: getImageForCategory(index)
+          image: place.imageUrl || getImageForCategory(index)
         });
       }
     });
@@ -174,7 +174,7 @@ export function RoutesPage({ travelStyle, location, onBack }: RoutesPageProps) {
         {
           routeName: "관광 코스 A",
           spots: [
-            { name: `${location} 박물관`, description: "역사 탐방", order: 1, image: "https://images.unsplash.com/photo-1565173877742-a47d02b5f9b2" },
+            { name: `${location} 박물관`, description: "역사 탐방", order: 1, image: "https://images.unsplash.com/photo-1670915564082-9258f2c326c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdXNldW0lMjBhcmNoaXRlY3R1cmUlMjBpbnRlcmlvcnxlbnwxfHx8fDE3NjExNTg3NjZ8MA&ixlib=rb-4.1.0&q=80&w=1080" },
             { name: `${location} 궁궐`, description: "문화재 관람", order: 2, image: "https://images.unsplash.com/photo-1548013146-72479768bada" },
             { name: `${location} 전통시장`, description: "로컬 맛집", order: 3, image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1" },
             { name: `${location} 호텔`, description: "도심 숙소", order: 4, image: "https://images.unsplash.com/photo-1566073771259-6a8506099945" }

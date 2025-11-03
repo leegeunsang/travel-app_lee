@@ -10,6 +10,7 @@ interface WeatherData {
   humidity: number;
   windSpeed: number;
   isMock: boolean;
+  error?: string;
 }
 
 interface WeatherWidgetProps {
@@ -28,35 +29,68 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ city, compact = fa
         setLoading(true);
         setError(null);
         
-        console.log(`[WeatherWidget] Fetching weather for: ${city}`);
-        console.log(`[WeatherWidget] Project ID: ${projectId ? 'exists' : 'missing'}`);
-        console.log(`[WeatherWidget] API Key: ${publicAnonKey ? 'exists' : 'missing'}`);
+        console.log(`[WeatherWidget] ===== STARTING WEATHER FETCH =====`);
+        console.log(`[WeatherWidget] City: ${city}`);
+        console.log(`[WeatherWidget] Project ID: ${projectId || 'MISSING'}`);
+        console.log(`[WeatherWidget] Public Anon Key: ${publicAnonKey ? 'exists (length: ' + publicAnonKey.length + ')' : 'MISSING'}`);
+        
+        if (!projectId || !publicAnonKey) {
+          throw new Error('Supabase configuration missing');
+        }
         
         const url = `https://${projectId}.supabase.co/functions/v1/make-server-80cc3277/weather/${encodeURIComponent(city)}`;
         console.log(`[WeatherWidget] Request URL: ${url}`);
         
         const response = await fetch(url, {
           headers: {
-            'Authorization': `Bearer ${publicAnonKey}`
+            'Authorization': `Bearer ${publicAnonKey}`,
+            'Content-Type': 'application/json'
           }
         });
 
         console.log(`[WeatherWidget] Response status: ${response.status}`);
+        console.log(`[WeatherWidget] Response ok: ${response.ok}`);
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error(`[WeatherWidget] HTTP error: ${response.status} - ${errorText}`);
-          throw new Error('날씨 정보를 가져올 수 없습니다');
+          console.error(`[WeatherWidget] HTTP error details:`, {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText
+          });
+          throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
         console.log(`[WeatherWidget] Weather data received:`, data);
+        console.log(`[WeatherWidget] Is mock data: ${data.isMock ? 'YES' : 'NO'}`);
+        
         setWeather(data);
+        
+        if (data.isMock) {
+          if (data.error === 'invalid_api_key') {
+            console.error(`[WeatherWidget] ❌ 401 ERROR: Invalid OPENWEATHER_API_KEY`);
+            console.error(`[WeatherWidget] Please set a valid API key using the settings modal`);
+            setError('401: OpenWeather API 키가 유효하지 않습니다');
+          } else {
+            console.warn(`[WeatherWidget] ⚠️ Using MOCK weather data. OPENWEATHER_API_KEY may not be configured.`);
+          }
+        } else {
+          console.log(`[WeatherWidget] ✅ Real weather data loaded successfully`);
+          setError(null); // Clear any previous errors
+        }
+        
       } catch (err) {
-        console.error('[WeatherWidget] Error fetching weather:', err);
+        console.error('[WeatherWidget] ❌ Error fetching weather:', err);
+        console.error('[WeatherWidget] Error details:', {
+          message: err instanceof Error ? err.message : String(err),
+          stack: err instanceof Error ? err.stack : undefined
+        });
+        
         setError(err instanceof Error ? err.message : '날씨 정보를 불러오는데 실패했습니다');
         
         // Set fallback weather data on error
+        console.log('[WeatherWidget] Setting fallback weather data');
         setWeather({
           temperature: 20,
           description: '날씨 정보 없음',
@@ -67,11 +101,25 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ city, compact = fa
         });
       } finally {
         setLoading(false);
+        console.log(`[WeatherWidget] ===== WEATHER FETCH COMPLETE =====`);
       }
     };
 
-    if (city) {
+    if (city && city.trim()) {
+      console.log(`[WeatherWidget] City changed to: ${city}, triggering fetch`);
       fetchWeather();
+    } else {
+      console.warn(`[WeatherWidget] No valid city provided (city="${city}"), skipping weather fetch`);
+      // Set fallback data immediately
+      setWeather({
+        temperature: 20,
+        description: '날씨 정보 없음',
+        icon: '01d',
+        humidity: 60,
+        windSpeed: 2.5,
+        isMock: true
+      });
+      setLoading(false);
     }
   }, [city]);
 
@@ -127,6 +175,32 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ city, compact = fa
     );
   }
 
+  if (error && !weather) {
+    const is401Error = error.includes('401');
+    
+    return (
+      <Card className={`border-2 ${is401Error ? 'bg-orange-50 border-orange-300' : 'bg-red-50 border-red-200'} ${compact ? 'p-3' : 'p-4'}`}>
+        <div className={`flex items-start gap-3 ${is401Error ? 'text-orange-800' : 'text-red-700'}`}>
+          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <span className="text-sm block mb-1">
+              {is401Error ? '🔑 API 키 오류' : '날씨 정보 로드 실패'}
+            </span>
+            <span className="text-xs opacity-90 block mb-2">{error}</span>
+            {is401Error && (
+              <div className="text-xs bg-white bg-opacity-50 p-2 rounded border border-orange-200 space-y-1">
+                <p className="mb-1">✅ 해결 방법:</p>
+                <p>1. 위 모달에서 유효한 API 키 입력</p>
+                <p>2. <a href="https://openweathermap.org/" target="_blank" rel="noopener" className="underline">OpenWeather</a>에서 무료 키 발급</p>
+                <p>3. 새 키는 활성화에 최대 2시간 소요</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   if (!weather) {
     return (
       <Card className={`bg-gray-50 border-gray-200 ${compact ? 'p-3' : 'p-4'}`}>
@@ -158,7 +232,12 @@ export const WeatherWidget: React.FC<WeatherWidgetProps> = ({ city, compact = fa
   }
 
   return (
-    <Card className={`bg-gradient-to-r ${getWeatherGradient(weather.icon)} p-4 shadow-md relative overflow-hidden`}>
+    <Card className={`bg-gradient-to-r ${getWeatherGradient(weather.icon)} p-4 shadow-md relative overflow-hidden ${weather.isMock && weather.error === 'invalid_api_key' ? 'border-2 border-orange-400' : ''}`}>
+      {weather.isMock && weather.error === 'invalid_api_key' && (
+        <div className="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+          ⚠️ API 키 필요
+        </div>
+      )}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
           {getWeatherIcon(weather.icon)}
