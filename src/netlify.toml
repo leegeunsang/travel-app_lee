@@ -1,46 +1,10 @@
-# Netlify configuration for PWA
-
+# Netlify configuration
 [build]
   command = "npm run build"
   publish = "build"
-
-# Force clear page - bypass SPA redirect
-[[redirects]]
-  from = "/force-clear"
-  to = "/force-clear.html"
-  status = 200
 
 # Redirect all routes to index.html for SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Headers for PWA files - NO CACHE for Service Worker
-[[headers]]
-  for = "/sw.js"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0"
-    Service-Worker-Allowed = "/"
-
-[[headers]]
-  for = "/manifest.json"
-  [headers.values]
-    Content-Type = "application/manifest+json"
-    Cache-Control = "public, max-age=86400"
-
-[[headers]]
-  for = "/icon-*.png"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Security headers
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(self), camera=(), microphone=()"
