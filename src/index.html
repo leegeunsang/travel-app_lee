@@ -6,11 +6,7 @@
   
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#6366F1">
-  <meta name="description" content="Escape the Ordinary - AI 기반 맞춤형 여행 추천 서비스. 여행 성향 분석, 실시간 날씨, 맞춤형 여행 코스 추천">
-  <meta name="keywords" content="여행, 추천, AI, 관광지, 여행앱, Escape the Ordinary, Travel More, 여행 성향 분석, GPT 추천">
-  
-  <!-- PWA Manifest - Temporarily disabled -->
-  <!-- <link rel="manifest" href="/manifest.json"> -->
+  <meta name="description" content="Escape the Ordinary - AI 기반 맞춤형 여행 추천 서비스">
   
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -22,32 +18,50 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="여행앱">
   
-  <!-- Android PWA Support -->
-  <meta name="mobile-web-app-capable" content="yes">
-  
   <title>Escape the Ordinary - 여행 추천 앱</title>
   
-  <!-- Force inline basic styles for immediate rendering -->
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { margin: 0; padding: 0; overflow-x: hidden; }
-    body { 
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-      background: linear-gradient(180deg, #f0f4fc 0%, #e8eef8 100%);
-    }
-    #root { min-height: 100vh; width: 100%; }
-  </style>
-  
-  <!-- Kakao Maps SDK will be loaded dynamically by React -->
+  <!-- TEMPORARY FIX: Tailwind CDN until build issue is resolved -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    console.log('[Kakao] 📍 Domain:', window.location.origin);
-    console.log('[Kakao] ℹ️ SDK will be loaded dynamically by React');
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(220 25% 88%)",
+            input: "hsl(220 25% 90%)",
+            ring: "hsl(230 45% 45%)",
+            background: "hsl(220 30% 98%)",
+            foreground: "hsl(230 40% 15%)",
+            primary: {
+              DEFAULT: "hsl(230 45% 45%)",
+              foreground: "hsl(0 0% 100%)",
+            },
+            secondary: {
+              DEFAULT: "hsl(40 85% 65%)",
+              foreground: "hsl(230 40% 15%)",
+            },
+            muted: {
+              DEFAULT: "hsl(220 25% 95%)",
+              foreground: "hsl(220 15% 50%)",
+            },
+            accent: {
+              DEFAULT: "hsl(15 85% 65%)",
+              foreground: "hsl(0 0% 100%)",
+            },
+          },
+          borderRadius: {
+            lg: "0.75rem",
+            md: "calc(0.75rem - 2px)",
+            sm: "calc(0.75rem - 4px)",
+          }
+        }
+      }
+    }
   </script>
 </head>
 <body>
   <div id="root"></div>
-  
-  <!-- Now load React app -->
   <script type="module" src="/main.tsx"></script>
 </body>
 </html>

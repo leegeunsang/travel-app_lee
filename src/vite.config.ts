@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   define: {
-    // Define environment variables at build time
     'import.meta.env.VITE_KAKAO_JS_KEY': JSON.stringify('94e86b9b6ddf71039ab09c9902d2d79f'),
   },
   css: {
@@ -12,18 +12,15 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    assetsDir: 'assets',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
-    cssCodeSplit: false,
+    minify: 'esbuild',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'ui-vendor': ['lucide-react'],
-        },
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'assets/style.css';
-          return 'assets/[name]-[hash][extname]';
         },
       }
     }
