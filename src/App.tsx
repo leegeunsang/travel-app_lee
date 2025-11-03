@@ -25,7 +25,6 @@ import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
 import { Toaster } from "./components/ui/sonner";
 import { getSupabaseClient } from "./utils/supabase/client";
-import { registerServiceWorker } from "./utils/pwa";
 import { motion } from "motion/react";
 import { WeatherTestPage } from "./components/WeatherTestPage";
 import { KakaoDebugPage } from "./components/KakaoDebugPage";
@@ -65,11 +64,6 @@ export default function App() {
     // Load Kakao Maps SDK dynamically (silently fails if domain not registered)
     loadKakaoMapScript().catch(() => {
       // Silently fail - app will use REST API fallback automatically
-    });
-    
-    // Register Service Worker for PWA (gracefully fails in preview)
-    registerServiceWorker().catch(err => {
-      console.log('PWA setup skipped:', err.message);
     });
     
     // Add PWA meta tags

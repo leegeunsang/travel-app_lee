@@ -1,5 +1,5 @@
 // Service Worker for PWA
-const CACHE_NAME = 'travel-app-v2';
+const CACHE_NAME = 'travel-app-v3';
 const urlsToCache = [
   '/',
   '/index.html',
